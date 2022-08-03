@@ -1,0 +1,89 @@
+{% extends 'expenses/base.html' %}
+
+{% block active-home %}text-accent fw-semibold{% endblock active-home %}
+
+{% block title %}
+Home
+{% endblock title %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row gy-4">
+        <!-- Left block -->
+        <div class="col-12 col-lg-8">
+            <div class="card rounded-4 bg-light-c p-2">
+                <div class="card-body">
+                    <div class="row align-items-center mb-3">
+                        <h4 class="col">Last expenses</h4>
+                        <div class="col text-end">
+                            <a class="ms-2 text-second-link text-decoration-none" href=""
+                                hx-get="{% url 'expenses-filter' 'all' %}" hx-trigger="click" hx-target="#expenses">
+                                All
+                            </a>
+                            <a class="ms-2 text-second-link text-decoration-none" href=""
+                                hx-get="{% url 'expenses-filter' 'month' %}" hx-trigger="click" hx-target="#expenses">
+                                Month
+                            </a>
+                            <a class="ms-2 text-second-link text-decoration-none" href=""
+                                hx-get="{% url 'expenses-filter' 'week' %}" hx-trigger="click" hx-target="#expenses">
+                                Week
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row justify-content-between text-second">
+                        <div class="col-6 col-sm-3 col-md-4">
+                            <h6>Name</h6>
+                        </div>
+                        <div class="col-6 col-sm-3 col-md-2 text-center">
+                            <h6>Price</h6>
+                        </div>
+                        <div class="col-6 col-sm-3 col-md-4 text-center">
+                            <h6>Category</h6>
+                        </div>
+                        <div class="col-6 col-sm-3 col-md-2 text-center">
+                            <h6>Action</h6>
+                        </div>
+                    </div>
+
+                    <div id="expenses">
+                        {% include 'expenses/expenses.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Right block -->
+        <div class="col-12 col-lg-4">
+            <div class="card rounded-4 bg-light-c px-2">
+                <h5 class="text-light">
+                </h5>
+                <div class="card-body">
+                    {% for category in categories %}
+                    {% if category.category.all %}
+                    <div class="card bg-light-c my-3">
+                        <div class="card-body rounded-4 bg-dark-c">
+                            {% for key, value in categories_percent.items %}
+                            {% if key == category.name %}
+                            <div class="row">
+                                <a href="" class="col text-decoration-none text-base-link">
+                                    {{ category.name }}</a>
+                                <span class="col text-end" style="color: {{ category.color }};">
+                                    {{ value|floatformat:0 }}%
+                                </span>
+                            </div>
+                            <div class="progress mt-3 mb-1" style="height: 10px; background-color: #242635;">
+                                <div class="progress-bar bg-gradient-c" role="progressbar"
+                                    style="width: {{ value|floatformat:0 }}%; background-color: {{ category.color }};">
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

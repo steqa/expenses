@@ -1,0 +1,146 @@
+:root {
+    --accent: #ef642c;
+    --second: #bdbec2;
+    --base: #ffffff;
+    --bg-light: #242635;
+    --bg-dark: #1a1d26;
+    --bg-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.007), rgba(233, 233, 233, 0.089), rgba(255, 255, 255, 0.411));
+    --navbar-width: 280px;
+    --navbar-width-sm: 4.5rem;
+}
+
+
+.height-100 {
+    height: 100vh;
+}
+
+.main {
+    margin-left: var(--navbar-width);
+}
+
+.container-fluid {
+    padding-right: 50px;
+    padding-left: 50px;
+}
+
+.bg-dark-c {
+    background-color: var(--bg-dark);
+}
+
+.bg-light-c {
+    color: var(--base) !important;
+    background-color: var(--bg-light);
+}
+
+.bg-gradient-c {
+    background-image: var(--bg-gradient) !important;
+}
+
+.text-accent {
+    color: var(--accent);
+}
+
+.text-second {
+    color: var(--second);
+}
+
+.text-second-link {
+    color: var(--second);
+}
+
+.text-second-link:hover {
+    opacity: 50%;
+    color: var(--second);
+}
+
+.text-second-link:active {
+    opacity: 100%;
+    color: var(--accent);
+}
+
+.text-base-link {
+    color: var(--base);
+}
+
+.text-base-link:hover {
+    opacity: 50%;
+    color: var(--base);
+}
+
+.text-base-link:active {
+    opacity: 100%;
+    color: var(--accent);
+}
+
+.text-link-hover:hover {
+    opacity: 50%;
+}
+
+.card {
+    border: none;
+}
+
+/* Dropdown */
+.dropdown-menu-dark {
+    background-color: var(--bg-light);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: var(--bs-dropdown-link-bg);
+    opacity: 50%;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    opacity: 100%;
+    color: var(--accent);
+}
+
+/* Navbar */
+.navbar-width {
+    width: var(--navbar-width);
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-x: visible;
+    background-color: var(--bg-light);
+}
+
+.navbar-text {
+    display: flexbox;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    opacity: 50%;
+    color: var(--accent);
+}
+
+.navbar-img {
+    width: 26px;
+    height: 26px;
+}
+
+.navbar-content {
+    justify-content: center !important;
+}
+
+@media screen and (max-width: 1280px) {
+    .navbar-width {
+        width: var(--navbar-width-sm);
+    }
+
+    .main {
+        margin-left: var(--navbar-width-sm);
+    }
+
+    .navbar-text {
+        display: none;
+    }
+
+    .navbar-img {
+        width: 32px;
+        height: 32px;
+    }
+}

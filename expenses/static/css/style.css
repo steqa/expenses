@@ -3,9 +3,10 @@
     --second: #bdbec2;
     --base: #ffffff;
     --bg-light: #242635;
+    --bg-second: #1f222e;
     --bg-dark: #1a1d26;
     --bg-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.007), rgba(233, 233, 233, 0.089), rgba(255, 255, 255, 0.411));
-    --navbar-width: 280px;
+    --navbar-width: 220px;
     --navbar-width-sm: 4.5rem;
 }
 
@@ -44,8 +45,23 @@
     color: var(--second);
 }
 
+.text-accent-link {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.text-accent-link:hover {
+    opacity: 50%;
+    color: var(--accent);
+}
+
+.text-accent-link:active {
+    opacity: 100%;
+}
+
 .text-second-link {
     color: var(--second);
+    text-decoration: none;
 }
 
 .text-second-link:hover {
@@ -55,21 +71,21 @@
 
 .text-second-link:active {
     opacity: 100%;
-    color: var(--accent);
 }
 
 .text-base-link {
     color: var(--base);
+    text-decoration: none;
 }
 
 .text-base-link:hover {
+    cursor: pointer;
     opacity: 50%;
     color: var(--base);
 }
 
 .text-base-link:active {
     opacity: 100%;
-    color: var(--accent);
 }
 
 .text-link-hover:hover {
@@ -78,6 +94,14 @@
 
 .card {
     border: none;
+}
+
+.table-row {
+    background-color: var(--bg-light);
+}
+
+.table-row:hover {
+    background-color: var(--bg-second);
 }
 
 /* Dropdown */

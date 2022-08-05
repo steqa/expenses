@@ -1,6 +1,4 @@
-from calendar import month
 from datetime import datetime, timedelta, date, time
-from tkinter import N
 from django.shortcuts import render
 from django.db.models import Q
 from .models import Expense, Category
@@ -24,39 +22,75 @@ def home(request):
 
 def _expenses_date_filter(request, period):
     filter_date, filter_date_2 = None, None
-    
-    _MONTHNAMES = [None, "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    day_now = date.today()
-    time_null = time(0, 0, 0)
-    today = datetime.combine(day_now, time_null)
-    week = timedelta(minutes=60*24*7)
-    today.year
-    today.month
 
-    if period == 'previous':
-        period_now = request.GET.get('period_now')
-        if period_now == 'week':
-            pass
-            # week_day = str(filter_date)[8:10]
-            # week_month = str(filter_date)[5:7] if int(str(filter_date)[5]) != 0 else str(filter_date)[6:7]
-            # week_year = str(filter_date)[0:4]
-            # print(f'{week_day} {week_month} {week_year}')
+    _MONTHNAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    today = datetime.combine(date.today(), time(0, 0, 0))
+    week = timedelta(minutes=60*24*7)
 
     if period == 'all':
         expenses = Expense.objects.all()
     elif period == 'year':
-        expenses = Expense.objects.filter(created__year=today.year)
         filter_date = today.year
+        expenses = Expense.objects.filter(created__year=filter_date)
     elif period == 'month':
-        expenses = Expense.objects.filter(created__month=today.month)
-        filter_date = _MONTHNAMES[today.month]
+        filter_date = today.month
+        filter_date_2 = today.year
+        expenses = Expense.objects.filter(Q(created__month=filter_date), Q(created__year=filter_date_2))
+        filter_date = _MONTHNAMES[filter_date - 1]
     elif period == 'week':
-        expenses = Expense.objects.filter(created__gte=today-week)
         filter_date = today - week
-        print('-----')
-        print(filter_date)
         filter_date_2 = today
+        expenses = Expense.objects.filter(created__gte=filter_date)
+
+    if period == 'previous' or period == 'next':
+        period_now = request.GET.get('period_now')
+        if period_now == 'year':
+            filter_date = int(request.GET.get('filter_date'))
+            if period == 'previous':
+                filter_date -= 1
+            elif period == 'next':
+                filter_date += 1
+                
+            expenses = Expense.objects.filter(created__year=filter_date)
+            period = period_now
+        elif period_now == 'month':
+            filter_date = int(_MONTHNAMES.index(request.GET.get('month'))) + 1
+            filter_date_2 = int(request.GET.get('year'))
+            if period == 'previous':
+                filter_date -= 1
+            elif period == 'next':
+                if filter_date == 12:
+                    filter_date = 1
+                else:
+                    filter_date += 1
+            
+            expenses = Expense.objects.filter(created__month=filter_date)
+            period = period_now
+            filter_date = _MONTHNAMES[filter_date - 1]
+        elif period_now == 'week':
+            week_start = request.GET.get('week_start')
+            week_end = request.GET.get('week_end')
+            
+            week_start_year = int(week_start.rstrip(', midnight')[-4:])
+            week_start_month = int(_MONTHNAMES.index(week_start[:3])) + 1
+            week_start_day = int(week_start.split()[1].rstrip(','))
+            week_start = datetime(week_start_year, week_start_month, week_start_day)
+            
+            week_end_year = int(week_end.rstrip(', midnight')[-4:])
+            week_end_month = int(_MONTHNAMES.index(week_end[:3])) + 1
+            week_end_day = int(week_end.split()[1].rstrip(','))
+            week_end = datetime(week_end_year, week_end_month, week_end_day)
+            
+            if period == 'previous':
+                filter_date = week_start - week
+                filter_date_2 = week_end - week
+            elif period == 'next':
+                filter_date = week_start + week
+                filter_date_2 = week_end + week
+                
+            expenses = Expense.objects.filter(Q(created__gte=filter_date), Q(created__lte=filter_date_2))
+            period = period_now
         
     if filter_date is None:
         filter_date = ''
@@ -64,45 +98,10 @@ def _expenses_date_filter(request, period):
         filter_date_2 = ''
 
     context = {
-        # 'expenses': expenses,
+        'expenses': expenses,
         'period': period,
         'filter_date': filter_date,
         'filter_date_2': filter_date_2,
-    }
-    return render(request, 'expenses/expenses-card.html', context)
-
-
-def _previous_date_period(request):
-    _MONTHNAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    day_now = date.today()
-    time_null = time(0, 0, 0)
-    today = datetime.combine(day_now, time_null)
-    period = request.GET.get('period')
-    show_date = request.GET.get('show_date')
-    show_date_2 = request.GET.get('show_date_2')
-    if period == 'year':
-        show_date = str(int(show_date) - 1)
-        expenses = Expense.objects.filter(created__year=show_date)
-    elif period == 'month':
-        show_date = _MONTHNAMES.index(show_date) - 1
-        expenses = Expense.objects.filter(Q(created__month=show_date), Q(created__year=today.year))
-        show_date = _MONTHNAMES[show_date]
-    elif period == 'week':
-        month_1 = _MONTHNAMES.index(show_date[:3]) + 1
-        print(month_1)
-        print(show_date)
-        print(show_date_2)
-        
-    if show_date is None:
-        show_date = ''
-    if show_date_2 is None:
-        show_date_2 = ''
-        
-    context = {
-        # 'expenses': expenses,
-        'period': period,
-        'show_date': show_date,
     }
     return render(request, 'expenses/expenses-card.html', context)
 

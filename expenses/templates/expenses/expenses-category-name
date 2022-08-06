@@ -1,0 +1,10 @@
+<a id="category"style="color: {{ category.color }};"
+    class="text-second-link"
+    href=""
+    hx-get="{% url 'category-hover' category.pk %}"
+    hx-trigger="click"
+    hx-target="#category"
+    hx-swap="outerHTML"
+>
+    {{ category.name }}
+</a>

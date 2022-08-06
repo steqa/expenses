@@ -5,11 +5,18 @@
     --bg-light: #242635;
     --bg-second: #1f222e;
     --bg-dark: #1a1d26;
-    --bg-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.007), rgba(233, 233, 233, 0.089), rgba(255, 255, 255, 0.411));
+    --bg-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.007), rgba(233, 233, 233, 0.089), rgba(112, 112, 112, 0.411));
+    --bg-gradient-accent: linear-gradient(180deg, rgba(251, 98, 101, 1), rgba(233, 78, 50, 1), rgba(239, 99, 44, 1));
+    --bg-gradient-blue: linear-gradient(180deg, rgba(42, 167, 248, 1), rgba(48, 107, 221, 1), rgba(53, 70, 242, 1));
+    --bg-gradient-purple: linear-gradient(180deg, rgba(241, 42, 227, 1), rgba(191, 51, 234, 1), rgba(150, 54, 243, 1));
+    --bg-gradient-green: linear-gradient(180deg, rgba(68, 216, 154, 1), rgba(31, 209, 185, 1), rgba(52, 205, 224, 1));
     --navbar-width: 220px;
     --navbar-width-sm: 4.5rem;
 }
 
+.hidden {
+    display: none;
+}
 
 .height-100 {
     height: 100vh;
@@ -37,6 +44,30 @@
     background-image: var(--bg-gradient) !important;
 }
 
+.bg-gradient-accent {
+    background: var(--bg-gradient-accent);
+    box-shadow: 0px 10px 25px rgba(239, 99, 44, 0.2);
+    z-index: 1;
+}
+
+.bg-gradient-blue {
+    background: var(--bg-gradient-blue);
+    box-shadow: 0px 10px 25px rgba(53, 70, 242, 0.2);
+    z-index: 1;
+}
+
+.bg-gradient-purple {
+    background: var(--bg-gradient-purple);
+    box-shadow: 0px 10px 25px rgba(150, 54, 243, 0.2);
+    z-index: 1;
+}
+
+.bg-gradient-green {
+    background: var(--bg-gradient-green);
+    box-shadow: 0px 10px 25px rgba(52, 205, 224, 0.2);
+    z-index: 1;
+}
+
 .text-accent {
     color: var(--accent);
 }
@@ -62,6 +93,7 @@
 .text-second-link {
     color: var(--second);
     text-decoration: none;
+    cursor: pointer;
 }
 
 .text-second-link:hover {
@@ -76,10 +108,10 @@
 .text-base-link {
     color: var(--base);
     text-decoration: none;
+    cursor: pointer;
 }
 
 .text-base-link:hover {
-    cursor: pointer;
     opacity: 50%;
     color: var(--base);
 }
@@ -109,6 +141,10 @@
     background-color: var(--bg-light);
 }
 
+.dropdown-item {
+    cursor: pointer;
+}
+
 .dropdown-item:hover,
 .dropdown-item:focus {
     background-color: var(--bs-dropdown-link-bg);
@@ -134,6 +170,7 @@
 .navbar-text {
     display: flexbox;
 }
+
 
 .nav-link:hover,
 .nav-link:focus {

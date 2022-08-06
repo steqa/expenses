@@ -2,7 +2,7 @@
     <div class="card rounded-4 bg-light-c px-2 pt-2 pb-1">
         <div class="card-body">
             <div class="row align-items-center justify-content-between">
-                <div class="col mb-1">
+                <div class="col-4 mb-1">
                     <span class="fs-4 fw-semibold">Last expenses</span>
                 </div>
                 <div class="col text-end font-monospace">
@@ -26,51 +26,59 @@
                         hx-target="#expenses">
                         WEEK
                     </a>
+                    <a class="ms-3 {% if period == 'week' %} text-accent-link {% else %} text-second-link {% endif %}"
+                        href="" hx-get="{% url 'expenses-date-filter' 'day' %}" hx-trigger="click"
+                        hx-target="#expenses">
+                        DAY
+                    </a>
                 </div>
             </div>
             <div>
                 <span class="text-second">
                     {% if period == 'all' %}
                     {% else %}
-                    <a class="text-second-link"
-                        href=""
-                        hx-get="
-                        {% if period == 'month' %}
-                        {% url 'expenses-date-filter' 'previous' %}?period_now={{ period }}&month={{ filter_date }}&year={{ filter_date_2 }}
+                    <a class="text-second-link" href="" hx-get="
+                        {% if period == 'year' %}
+                        {% url 'expenses-date-filter' 'previous' %}?period_now={{ period }}&year={{ year }}
+                        {% elif period == 'month' %}
+                        {% url 'expenses-date-filter' 'previous' %}?period_now={{ period }}&month={{ month }}&year={{ year }}
                         {% elif period == 'week' %}
-                        {% url 'expenses-date-filter' 'previous' %}?period_now={{ period }}&week_start={{ filter_date }}&week_end={{ filter_date_2 }}
+                        {% url 'expenses-date-filter' 'previous' %}?period_now={{ period }}&week_start={{ week_start }}&week_end={{ week_end }}
+                        {% elif period == 'day' %}
+                        {% url 'expenses-date-filter' 'previous' %}?period_now={{ period }}&day={{ day }}&month={{ month }}&year={{ year }}
                         {% else %}
-                        {% url 'expenses-date-filter' 'previous' %}?period_now={{ period }}&filter_date={{ filter_date }}
+                        {% url 'expenses-date-filter' 'previous' %}?period_now={{ period }}
                         {% endif %}
-                        "
-                        hx-trigger="click"
-                        hx-target="#expenses">
+                        " hx-trigger="click" hx-target="#expenses">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-caret-left-fill" viewBox="0 1.5 16 16">
                             <path
                                 d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
                         </svg>
                     </a>
-                    {% if period == 'month' %}
-                    <span class="font-monospace text-uppercase">{{ filter_date }} {{ filter_date_2 }}</span>
+                    {% if period == 'year' %}
+                    <span class="font-monospace text-uppercase">{{ year }}</span>
+                    {% elif period == 'month' %}
+                    <span class="font-monospace text-uppercase">{{ month }} {{ year }}</span>
                     {% elif period == 'week' %}
-                    <span class="font-monospace text-uppercase">{{ filter_date|date:"d M Y" }} - {{ filter_date_2|date:"d M Y" }}</span>
-                    {% else %}
-                    <span class="font-monospace text-uppercase">{{ filter_date }}</span>
+                    <span class="font-monospace text-uppercase">{{ week_start|date:"d M Y" }} - {{ week_end|date:"d M Y"
+                        }}</span>
+                    {% elif period == 'day' %}
+                    <span class="font-monospace text-uppercase">{{ day }} {{ month }} {{ year }}</span>
                     {% endif %}
-                    <a class="text-second-link"
-                        href=""
-                        hx-get="
-                        {% if period == 'month' %}
-                        {% url 'expenses-date-filter' 'next' %}?period_now={{ period }}&month={{ filter_date }}&year={{ filter_date_2 }}
+                    <a class="text-second-link" href="" hx-get="
+                        {% if period == 'year' %}
+                        {% url 'expenses-date-filter' 'next' %}?period_now={{ period }}&year={{ year }}
+                        {% elif period == 'month' %}
+                        {% url 'expenses-date-filter' 'next' %}?period_now={{ period }}&month={{ month }}&year={{ year }}
                         {% elif period == 'week' %}
-                        {% url 'expenses-date-filter' 'next' %}?period_now={{ period }}&week_start={{ filter_date }}&week_end={{ filter_date_2 }}
+                        {% url 'expenses-date-filter' 'next' %}?period_now={{ period }}&week_start={{ week_start }}&week_end={{ week_end }}
+                        {% elif period == 'day' %}
+                        {% url 'expenses-date-filter' 'next' %}?period_now={{ period }}&day={{ day }}&month={{ month }}&year={{ year }}
                         {% else %}
                         {% url 'expenses-date-filter' 'next' %}?period_now={{ period }}&filter_date={{ filter_date }}
                         {% endif %}
-                        "
-                        hx-trigger="click"
-                        hx-target="#expenses">
+                        " hx-trigger="click" hx-target="#expenses">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-caret-right-fill" viewBox="0 1.5 16 16">
                             <path
@@ -88,37 +96,48 @@
                 <div class="col-6 col-sm-3 col-md-2 text-center">
                     <h6>Price</h6>
                 </div>
-                <div class="col-6 col-sm-3 col-md-4 text-center">
+                <div class="col-6 col-sm-2 col-md-2 text-center">
+                    <h6>Date</h6>
+                </div>
+                <div class="col-6 col-sm-3 col-md-3 text-center">
                     <h6>Category</h6>
                 </div>
-                <div class="col-6 col-sm-3 col-md-2 text-center">
-                    <h6>Action</h6>
+                <div class="col-6 col-sm-1 col-md-1 text-center">
+                    <h6></h6>
                 </div>
             </div>
 
-            <div>
+            <div class="py-2">
                 {% for expense in expenses %}
                 <div class="row py-2 align-items-center justify-content-between table-row">
-                    <a href="">
-                        <div class="col-6 col-sm-3 col-md-4">
-                            <a href="" class="text-base-link"><strong>{{ expense.name }}</strong></a>
-                        </div>
-                        <div class="col-6 col-sm-3 col-md-2 text-center">
-                            <a href="" class="text-base-link">${{ expense.price }}</a>
-                        </div>
-                        <div class="col-6 col-sm-3 col-md-4 text-center">
-                            {% for category in expense.category.all %}
-                            <a style="color: {{ category.color }};">{{ category.name }}</a>
-                            {% endfor %}
-                        </div>
-                        <div class="col-6 col-sm-3 col-md-2 text-center">
+                    <div class="col-6 col-sm-3 col-md-4">
+                        <a href="" class="text-base-link">{{ expense.name }}</a>
+                    </div>
+                    <div class="col-6 col-sm-3 col-md-2 text-center">
+                        <a href="" class="text-base-link fw-semibold">${{ expense.price }}</a>
+                    </div>
+                    <div class="col-6 col-sm-2 col-md-2 text-center">
+                        <a href="" class="text-second-link">{{ expense.created|date:"m.d.y" }}</a>
+                    </div>
+                    <div class="col-6 col-sm-3 col-md-3 text-center">
+                        {% for category in expense.category.all %}
+                        <a style="color: {{ category.color }};" class="text-second-link"
+                            data-category-name="category-{{ category.pk }}-{{ expense.pk }}"
+                            id="category-open-{{ category.pk }}-{{ expense.pk }}"> {{ category.name|first }} </a>
+                        <a style="color: {{ category.color }};" class="hidden text-second-link"
+                            data-category-name-open="category-open-{{ category.pk }}-{{ expense.pk }}"
+                            id="category-{{ category.pk }}-{{ expense.pk }}"> {{ category.name }} </a>
+                        {% endfor %}
+                    </div>
+                    <div class="col-6 col-sm-1 col-md-1 text-center">
+                        <a href="" class="text-second-link">
                             <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
-                                class="bi bi-three-dots" viewBox="0 0 16 16">
+                                class="bi bi-three-dots text-center me-2" viewBox="0 0 16 16">
                                 <path
                                     d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
                             </svg>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                 </div>
                 {% endfor %}
             </div>

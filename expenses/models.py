@@ -28,4 +28,4 @@ class Expense(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['user', 'name']
+        ordering = ['user', '-created']

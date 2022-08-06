@@ -1,14 +1,18 @@
-// const dateFilterSelectors = document.querySelectorAll('[data-date-filter-selector]')
-// console.log(dateFilterSelectors)
+const categoryNames = document.querySelectorAll('[data-category-name]');
+const categoryNamesOpen = document.querySelectorAll('[data-category-name-open]');
 
-// dateFilterSelectors.forEach(function (item) {
-//     item.addEventListener('click', function () {
-//         dateFilterSelectors.forEach(function (i) {
-//             i.classList.remove('text-accent-link')
-//             i.classList.add('text-second-link')
-//         });
+categoryNames.forEach(function (item) {
+    item.addEventListener('click', function () {
+        item.classList.toggle('hidden')
+        const openCategoryName = document.querySelector('#' + this.dataset.categoryName);
+        openCategoryName.classList.toggle('hidden')
+    });
+});
 
-//         item.classList.remove('text-second-link')
-//         item.classList.add('text-accent-link')
-//     });
-// });
+categoryNamesOpen.forEach(function (item) {
+    item.addEventListener('click', function () {
+        item.classList.toggle('hidden')
+        const categoryName = document.querySelector('#' + this.dataset.categoryNameOpen);
+        categoryName.classList.toggle('hidden')
+    });
+});

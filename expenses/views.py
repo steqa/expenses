@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta, date, time
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.db.models import Q
 from .models import Expense, Category
@@ -7,7 +9,8 @@ from .models import Expense, Category
 def home(request):
     today = datetime.combine(date.today(), time(0, 0, 0))
     week = timedelta(minutes=60*24*7)
-    expenses = Expense.objects.all()
+    expenses = Expense.objects.all()[0:2]
+    total_expenses = Expense.objects.count()
     categories = Category.objects.all()
     total_year = sum(i.price for i in Expense.objects.filter(created__year=today.year))
     total_month = sum(i.price for i in Expense.objects.filter(created__month=today.month))
@@ -26,6 +29,7 @@ def home(request):
 
     context = {
         'expenses': expenses,
+        'total_expenses': total_expenses,
         'categories': categories,
         'categories_percent': categories_percent,
         'period': 'all',
@@ -41,7 +45,7 @@ def home(request):
     return render(request, 'expenses/home.html', context)
 
 
-def _expenses_date_filter(request, period):
+def expenses_date_filter(request, period):
     year, month, day, week_start, week_end = '', '', '', '', ''
 
     _MONTHNAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -198,6 +202,16 @@ def _get_categories_percent(expenses, categories):
             categories_percent[category.name] = sum / all_sum * 100
 
     return categories_percent
+
+
+def load_more(request):
+    total_item = int(request.GET.get('total_item'))
+    limit = 2
+    expense_obj = list(Expense.objects.values()[total_item:total_item+limit])
+    data = {
+        'expenses': expense_obj,
+    }
+    return JsonResponse(data=data)
 
 
 def dashboard(request):

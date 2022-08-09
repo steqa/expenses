@@ -48,24 +48,56 @@
     background: var(--bg-gradient-accent);
     box-shadow: 0px 10px 25px rgba(239, 99, 44, 0.2);
     z-index: 1;
+    transition: 0.5s;
+}
+
+.bg-gradient-accent:hover {
+    background: var(--bg-gradient-accent);
+    box-shadow: 0px 35px 50px rgba(239, 99, 44, 0.2);
+    z-index: 1;
+    transform: scale(1.05);
 }
 
 .bg-gradient-blue {
     background: var(--bg-gradient-blue);
     box-shadow: 0px 10px 25px rgba(53, 70, 242, 0.2);
     z-index: 1;
+    transition: 0.5s;
+}
+
+.bg-gradient-blue:hover {
+    background: var(--bg-gradient-blue);
+    box-shadow: 0px 35px 50px rgba(53, 70, 242, 0.2);
+    z-index: 1;
+    transform: scale(1.05);
 }
 
 .bg-gradient-purple {
     background: var(--bg-gradient-purple);
     box-shadow: 0px 10px 25px rgba(150, 54, 243, 0.2);
     z-index: 1;
+    transition: 0.5s;
+}
+
+.bg-gradient-purple:hover {
+    background: var(--bg-gradient-purple);
+    box-shadow: 0px 35px 50px rgba(150, 54, 243, 0.2);
+    z-index: 1;
+    transform: scale(1.05);
 }
 
 .bg-gradient-green {
     background: var(--bg-gradient-green);
     box-shadow: 0px 10px 25px rgba(52, 205, 224, 0.2);
     z-index: 1;
+    transition: 0.5s;
+}
+
+.bg-gradient-green:hover {
+    background: var(--bg-gradient-green);
+    box-shadow: 0px 35px 50px rgba(52, 205, 224, 0.2);
+    z-index: 1;
+    transform: scale(1.05);
 }
 
 .text-accent {
@@ -170,23 +202,26 @@
 /* Dropdown */
 .dropdown-menu-dark {
     background-color: var(--bg-light);
+    min-width: 0.1rem;
 }
 
 .dropdown-item {
     cursor: pointer;
-    transition-duration: 0.2s;
+    transition-duration: 0.2;
+    padding: 0px 0px;
+    padding: 0.25rem 1rem;
 }
 
 .dropdown-item:hover,
 .dropdown-item:focus {
-    background-color: var(--bs-dropdown-link-bg);
+    background-color: var(--bg-second);
     opacity: 50%;
 }
 
 .dropdown-item.active,
 .dropdown-item:active {
     opacity: 100%;
-    color: var(--accent);
+    color: var(--second);
 }
 
 /* Navbar */

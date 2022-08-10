@@ -12,7 +12,7 @@ class Category(models.Model):
         return self.name
 
     class Meta:
-        ordering = ['user', 'name']
+        ordering = ['user', '-created']
 
 
 class Expense(models.Model):

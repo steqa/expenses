@@ -1,23 +1,35 @@
-{% load static %}
 <div id="expenses">
     <div class="card rounded-4 bg-light-c px-2 pt-2">
         <div class="card-body">
             <div class="row align-items-center justify-content-between">
                 <div class="col-4 mb-1">
-                    <span class="fs-4 fw-semibold">Total</span>
+                    <span class="fs-4 fw-semibold">
+                        {% if period == 'year' %}
+                        Year
+                        {% elif period == 'month' %}
+                        Month
+                        {% elif period == 'week' %}
+                        Week
+                        {% elif period == 'day' %}
+                        Day
+                        {% else %}
+                        Recently
+                        {% endif %}
+                    </span>
                 </div>
+                {% if period %}
                 <div class="col text-end font-monospace">
                     <span class="text-second d-flex justify-content-end">
-                        {% if period == 'all' %}
-                        {% elif period == 'day' %}
+                        {% if period == 'day' %}
+
                         <div class="dropdown text-uppercase me-4">
-                            <a href="#" class="navbar-text text-second-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <a href="#" class="text-second-link dropdown-toggle" data-bs-toggle="dropdown">
                                 {{ year }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                                 {% for y in years %}
                                 <li>
-                                    <a class="dropdown-item" data-date-update href=""
+                                    <a class="dropdown-item" href=""
                                         hx-get="{% url 'expenses-date-filter' 'day' 'year-select' %}?day={{ day }}&month={{ month }}&year={{ y }}"
                                         hx-trigger="click" hx-target="#expenses">
                                         {{ y }}
@@ -27,13 +39,13 @@
                             </ul>
                         </div>
                         <div class="dropdown text-uppercase me-4">
-                            <a href="#" class="navbar-text text-second-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <a href="#" class="text-second-link dropdown-toggle" data-bs-toggle="dropdown">
                                 {{ month }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                                 {% for m in months %}
                                 <li>
-                                    <a class="dropdown-item" data-date-update href=""
+                                    <a class="dropdown-item" href=""
                                         hx-get="{% url 'expenses-date-filter' 'day' 'month-select' %}?day={{ day }}&month={{ m }}&year={{ year }}"
                                         hx-trigger="click" hx-target="#expenses">
                                         {{ m }}
@@ -42,7 +54,7 @@
                                 {% endfor %}
                             </ul>
                         </div>
-                        <a class="text-second-link pe-2" data-date-update href=""
+                        <a class="text-second-link pe-2" href=""
                             hx-get="{% url 'expenses-date-filter' 'day' 'previous' %}?day={{ day }}&month={{ month }}&year={{ year }}"
                             hx-trigger="click" hx-target="#expenses">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
@@ -52,7 +64,7 @@
                             </svg>
                         </a>
                         <span class="font-monospace text-uppercase">{{ day }}</span>
-                        <a class="text-second-link ps-2" data-date-update href="" hx-get="
+                        <a class="text-second-link ps-2" href="" hx-get="
                                 {% url 'expenses-date-filter' 'day' 'next' %}?day={{ day }}&month={{ month }}&year={{ year }}
                                 " hx-trigger="click" hx-target="#expenses">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
@@ -61,8 +73,9 @@
                                     d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
                             </svg>
                         </a>
+
                         {% else %}
-                        <a class="text-second-link" data-date-update href="" hx-get="
+                        <a class="text-second-link pe-2" href="" hx-get="
                             {% if period == 'year' %}
                             {% url 'expenses-date-filter' 'year' 'previous' %}?year={{ year }}
                             {% elif period == 'month' %}
@@ -86,7 +99,7 @@
                         {% elif period == 'week' %}
                         <span class="font-monospace text-uppercase">{{ week_start|date:"d M Y" }} - {{ week_end|date:"d M Y"}}</span>
                         {% endif %}
-                        <a class="text-second-link" data-date-update href="" hx-get="
+                        <a class="text-second-link ps-2" href="" hx-get="
                             {% if period == 'year' %}
                             {% url 'expenses-date-filter' 'year' 'next' %}?year={{ year }}
                             {% elif period == 'month' %}
@@ -106,9 +119,10 @@
                         {% endif %}
                     </span>
                 </div>
+                {% endif %}
             </div>
 
-            <div class="row justify-content-between text-second mt-3">
+            <div class="row justify-content-between text-second mt-4">
                 <div class="col-6 col-sm-3 col-md-4">
                     <h6>Name</h6>
                 </div>
@@ -127,62 +141,8 @@
             </div>
 
             <div class="py-2">
-                {% for expense in expenses %}
-                <div class="row py-2 align-items-center justify-content-between table-row expense">
-                    <div class="col-6 col-sm-3 col-md-4">
-                        <a href="" class="text-base-link">{{ expense.name }}</a>
-                    </div>
-                    <div class="col-6 col-sm-3 col-md-2 text-center">
-                        <a href="" class="text-base-link fw-semibold">${{ expense.price }}</a>
-                    </div>
-                    <div class="col-6 col-sm-2 col-md-2 text-center">
-                        <a href="" class="text-second-link">{{ expense.created|date:"m.d.y" }}</a>
-                    </div>
-                    <div class="col-6 col-sm-3 col-md-3 text-center">
-                        {% for category in expense.category.all %}
-                        <a style="color: {{ category.color }};" class="text-second-link"
-                            data-category-name="category-{{ category.pk }}-{{ expense.pk }}"
-                            id="category-open-{{ category.pk }}-{{ expense.pk }}"> {{ category.name|first }} </a>
-                        <a style="color: {{ category.color }};" class="hidden text-second-link"
-                            data-category-name-open="category-open-{{ category.pk }}-{{ expense.pk }}"
-                            id="category-{{ category.pk }}-{{ expense.pk }}"> {{ category.name }} </a>
-                        {% endfor %}
-                    </div>
-                    <div class="col-6 col-sm-1 col-md-1 text-center">
-                        <a href="" class="text-second-link">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
-                                class="bi bi-three-dots text-center me-2" viewBox="0 0 16 16">
-                                <path
-                                    d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            <div class="text-center mb-2" id="loadMoreBtn">
-                <button class="btn-c">Load More</button>
+                {% include 'expenses/expenses-card-rows.html' %}
             </div>
         </div>
     </div>
 </div>
-<script>
-    categoryNames = document.querySelectorAll('[data-category-name]');
-    categoryNamesOpen = document.querySelectorAll('[data-category-name-open]');
-
-    categoryNames.forEach(function (item) {
-        item.addEventListener('click', function () {
-            item.classList.toggle('hidden')
-            const openCategoryName = document.querySelector('#' + this.dataset.categoryName);
-            openCategoryName.classList.toggle('hidden')
-        });
-    })
-
-    categoryNamesOpen.forEach(function (item) {
-        item.addEventListener('click', function () {
-            item.classList.toggle('hidden')
-            const categoryName = document.querySelector('#' + this.dataset.categoryNameOpen);
-            categoryName.classList.toggle('hidden')
-        });
-    });
-</script>

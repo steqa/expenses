@@ -1,0 +1,38 @@
+{% for expense in expenses %}
+<div class="row py-3 align-items-center justify-content-between table-row">
+    <div class="col-6 col-sm-3 col-md-4">
+        <a href="" class="text-base-link">{{ expense.name }}</a>
+    </div>
+    <div class="col-6 col-sm-3 col-md-2 text-center">
+        <a href="" class="text-base-link fw-semibold">${{ expense.price }}</a>
+    </div>
+    <div class="col-6 col-sm-2 col-md-2 text-center">
+        <a href="" class="text-second-link">{{ expense.created|date:"m.d.y" }}</a>
+    </div>
+    <div class="col-6 col-sm-3 col-md-3 text-center">
+        {% for category in expense.category.all %}
+        <a style="color: {{ category.color }};" class="text-second-link"
+            id="category-opened{{ category.pk }}{{ expense.pk }}"
+            onclick="categoryShow({{ category.pk }}, {{ expense.pk }})"> {{ category.name|first }} </a>
+        <a style="color: {{ category.color }};" class="hidden text-second-link"
+            id="category-closed{{ category.pk }}{{ expense.pk }}"
+            onclick="categoryShow({{ category.pk }}, {{ expense.pk }})"> {{ category.name }} </a>
+        {% endfor %}
+    </div>
+    <div class="col-6 col-sm-1 col-md-1 text-center">
+        <a href="" class="text-second-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
+                class="bi bi-three-dots text-center me-2" viewBox="0 0 16 16">
+                <path
+                    d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
+            </svg>
+        </a>
+    </div>
+</div>
+{% endfor %}
+{% if expenses.has_next %}
+<div class="text-center mt-3" id="load-more">
+    <button class="btn-c" hx-get="{% url 'expenses-date-filter' period 'show' %}?page={{ expenses.next_page_number }}&load-more=True"
+        hx-target="#load-more" hx-swap="outerHTML">Load More</button>
+</div>
+{% endif %}

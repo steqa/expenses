@@ -7,4 +7,9 @@ Dashboard
 {% endblock title %}
 
 {% block content %}
+<form method="post">
+    {% csrf_token %}
+    <input type="number" name="quantity">
+    <button type="submit">Add</button>
+</form>
 {% endblock content %}

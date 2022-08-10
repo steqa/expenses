@@ -1,2 +1,6 @@
-let categoryNames = document.querySelectorAll('[data-category-name]');
-let categoryNamesOpen = document.querySelectorAll('[data-category-name-open]');
+function categoryShow (categoryPk, expensePk) {
+    document.getElementById(`category-opened${ categoryPk }${ expensePk }`).classList.toggle('hidden')
+    document.getElementById(`category-closed${ categoryPk }${ expensePk }`).classList.toggle('hidden')
+}
+
+console.log(window.innerHeight)

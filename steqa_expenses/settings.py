@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'widget_tweaks',
-    
+        
     'authentication.apps.AuthenticationConfig',
     'expenses.apps.ExpensesConfig',
 ]

@@ -1,4 +1,5 @@
 {% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -27,8 +28,7 @@
         </a>
         <ul class="nav nav-pills nav-flush flex-column mb-auto">
             <li class="nav-item">
-                <a href="{% url 'home' %}"
-                    class="py-2 rounded-0 {% block active-home %}nav-link-c{% endblock %}">
+                <a href="{% url 'home' %}" class="rounded-0 {% block active-home %}nav-link-c{% endblock %}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                         class="bi bi-house ms-1 pb-1" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"
@@ -41,9 +41,34 @@
                     </span>
                 </a>
             </li>
-            <li>
-                <a href="{% url 'dashboard' %}"
-                    class="py-2 rounded-0 {% block active-dashboard %}nav-link-c{% endblock %}">
+            <li class="nav-item">
+                <a href="" class="rounded-0 nav-link-c" data-bs-toggle="modal" data-bs-target="#addExpenseModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                        class="bi bi-handbag ms-1 pb-1" viewBox="0 0 16 16">
+                        <path
+                            d="M8 1a2 2 0 0 1 2 2v2H6V3a2 2 0 0 1 2-2zm3 4V3a3 3 0 1 0-6 0v2H3.36a1.5 1.5 0 0 0-1.483 1.277L.85 13.13A2.5 2.5 0 0 0 3.322 16h9.355a2.5 2.5 0 0 0 2.473-2.87l-1.028-6.853A1.5 1.5 0 0 0 12.64 5H11zm-1 1v1.5a.5.5 0 0 0 1 0V6h1.639a.5.5 0 0 1 .494.426l1.028 6.851A1.5 1.5 0 0 1 12.678 15H3.322a1.5 1.5 0 0 1-1.483-1.723l1.028-6.851A.5.5 0 0 1 3.36 6H5v1.5a.5.5 0 1 0 1 0V6h4z" />
+                    </svg>
+                    <span class="ms-1 navbar-text">
+                        Add expense
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="" class="rounded-0 nav-link-c" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                        class="bi bi-tags ms-1 pb-1" viewBox="0 0 16 16">
+                        <path
+                            d="M3 2v4.586l7 7L14.586 9l-7-7H3zM2 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 2 6.586V2z" />
+                        <path
+                            d="M5.5 5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM1 7.086a1 1 0 0 0 .293.707L8.75 15.25l-.043.043a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 0 7.586V3a1 1 0 0 1 1-1v5.086z" />
+                    </svg>
+                    <span class="ms-1 navbar-text">
+                        Add category
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'dashboard' %}" class="rounded-0 {% block active-dashboard %}nav-link-c{% endblock %}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor"
                         class="bi bi-speedometer2 ms-1 pb-1" viewBox="0 0 16 16">
                         <path
@@ -74,8 +99,52 @@
         {% block content %}
         {% endblock content %}
     </div>
-    <!-- <div class="bg-danger" style="height: 752px;">
-    </div> -->
+
+    <div class="modal fade" id="addExpenseModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between">
+                        <h5>Add Expense</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div>
+                    </div>
+                    <form action="{% url 'add-expense' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="col-form-label">Name:</label>
+                            {% render_field expense_form.name type="text" class="form-control" %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label">Price:</label>
+                            {% render_field expense_form.price class="form-control" %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label">Category:</label>
+                            {% render_field expense_form.category class="form-select" %}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addCategoryModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between">
+                        <h5>Add Category</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
         crossorigin="anonymous"></script>
@@ -84,4 +153,5 @@
         crossorigin="anonymous"></script>
     <script src="{% static 'js/main.js' %}"></script>
 </body>
+
 </html>

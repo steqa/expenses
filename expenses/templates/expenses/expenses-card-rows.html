@@ -7,7 +7,7 @@
         <a href="" class="text-base-link fw-semibold">${{ expense.price }}</a>
     </div>
     <div class="col-6 col-sm-2 col-md-2 text-center">
-        <a href="" class="text-second-link">{{ expense.created|date:"m.d.y" }}</a>
+        <a href="" class="text-second-link">{{ expense.created|date:"d.m.y" }}</a>
     </div>
     <div class="col-6 col-sm-3 col-md-3 text-center">
         {% for category in expense.category.all %}

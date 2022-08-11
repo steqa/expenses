@@ -240,7 +240,7 @@
 
 .nav-link-c {
     display: block;
-    padding: 0.5rem 1rem;
+    padding: 1rem 1rem;
     text-decoration: none;
     color: var(--base);
     transition-duration: 0.2s;
@@ -253,7 +253,7 @@
 
 .nav-link-active-c {
     display: block;
-    padding: 0.5rem 1rem;
+    padding: 1rem 1rem;
     text-decoration: none;
     color: var(--accent);
     font-weight: 700;
@@ -291,4 +291,10 @@
         width: 32px;
         height: 32px;
     }
+}
+
+/* Modal */
+.modal-content {
+    color: var(--base);
+    background-color: var(--bg-light);
 }

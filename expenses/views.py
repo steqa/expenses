@@ -1,9 +1,11 @@
 import random
 from datetime import datetime, timedelta, date, time
+from django.shortcuts import redirect
 from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.db.models import Q
 from .models import Expense, Category
+from .forms import ExpenseForm
 
 
 def home(request):
@@ -38,6 +40,8 @@ def home(request):
     categories_percent = _get_categories_percent(
         expenses=Expense.objects.all(), categories=categories)
 
+    expense_form = ExpenseForm()
+    
     context = {
         'expenses': expenses,
         'categories': categories,
@@ -50,6 +54,7 @@ def home(request):
         'percent_last_month': percent_last_month,
         'percent_last_week': percent_last_week,
         'percent_last_day': percent_last_day,
+        'expense_form': expense_form,
     }
     return render(request, 'expenses/home.html', context)
 
@@ -196,6 +201,36 @@ def expenses_date_filter(request, period, action):
         return render(request, 'expenses/total-period.html', context)
 
 
+def add_expense(request):
+    form = ExpenseForm(request.POST)
+    if form.is_valid():
+        print('SAVE')
+        expense = form.save()
+        expense.user = request.user
+        expense.save()
+        return redirect('home')
+        
+
+
+def dashboard(request):
+    if request.method == 'POST':
+        quantity = request.POST.get('quantity')
+        categories = Category.objects.all()
+        words = ['phone', 'notebook', 'pen', 'beautiful', 'big', 'small', 'simple', 'mouse', 'keyboard', 'milk', 'chocolate', 'shirt',
+                 'bucket', 'cheese', 'tea', 'coffee', 'car', 'wheel', 'backpack', 'adidas', 'nike', 'off-white', 'supreme', 'cable', 'lamp', 'chair']
+        for q in range(int(quantity)):
+            expense = Expense.objects.create(
+                user=request.user,
+                name=' '.join(random.choice(words)
+                              for i in range(random.randint(1, 7))).capitalize(),
+                price=random.randint(200, 2500),
+            )
+            for i in range(random.randint(1, 4)):
+                expense.category.add(random.choice(categories))
+
+    return render(request, 'expenses/dashboard.html')
+
+
 def _get_percent_last(now, last):
     percent_status = []
     if last == 0:
@@ -227,22 +262,3 @@ def _get_categories_percent(expenses, categories):
             categories_percent[category.name] = sum / all_sum * 100
 
     return categories_percent
-
-
-def dashboard(request):
-    if request.method == 'POST':
-        quantity = request.POST.get('quantity')
-        categories = Category.objects.all()
-        words = ['phone', 'notebook', 'pen', 'beautiful', 'big', 'small', 'simple', 'mouse', 'keyboard', 'milk', 'chocolate', 'shirt',
-                 'bucket', 'cheese', 'tea', 'coffee', 'car', 'wheel', 'backpack', 'adidas', 'nike', 'off-white', 'supreme', 'cable', 'lamp', 'chair']
-        for q in range(int(quantity)):
-            expense = Expense.objects.create(
-                user=request.user,
-                name=' '.join(random.choice(words)
-                              for i in range(random.randint(1, 7))).capitalize(),
-                price=random.randint(200, 2500),
-            )
-            for i in range(random.randint(1, 4)):
-                expense.category.add(random.choice(categories))
-
-    return render(request, 'expenses/dashboard.html')

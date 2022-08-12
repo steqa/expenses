@@ -1,11 +1,11 @@
 import random
 from datetime import datetime, timedelta, date, time
-from django.shortcuts import redirect
 from django.core.paginator import Paginator
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.db.models import Q
 from .models import Expense, Category
-from .forms import ExpenseForm
+from .forms import ExpenseForm, CategoryForm
 
 
 def home(request):
@@ -40,8 +40,6 @@ def home(request):
     categories_percent = _get_categories_percent(
         expenses=Expense.objects.all(), categories=categories)
 
-    expense_form = ExpenseForm()
-    
     context = {
         'expenses': expenses,
         'categories': categories,
@@ -54,7 +52,6 @@ def home(request):
         'percent_last_month': percent_last_month,
         'percent_last_week': percent_last_week,
         'percent_last_day': percent_last_day,
-        'expense_form': expense_form,
     }
     return render(request, 'expenses/home.html', context)
 
@@ -179,7 +176,7 @@ def expenses_date_filter(request, period, action):
     paginator = Paginator(expenses, 10)
     page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
-    
+
     context = {
         'expenses': page_obj,
         'period': period,
@@ -191,10 +188,10 @@ def expenses_date_filter(request, period, action):
         'years': _YEARS,
         'months': _MONTHNAMES,
     }
-    
+
     if request.GET.get('load-more') == 'True':
         return render(request, 'expenses/expenses-card-rows.html', context)
-    
+
     if htmx == True:
         return render(request, 'expenses/expenses-card.html', context)
     else:
@@ -202,14 +199,34 @@ def expenses_date_filter(request, period, action):
 
 
 def add_expense(request):
-    form = ExpenseForm(request.POST)
-    if form.is_valid():
-        print('SAVE')
-        expense = form.save()
-        expense.user = request.user
-        expense.save()
-        return redirect('home')
-        
+    today = datetime.combine(date.today(), time(0, 0, 0))
+    form = ExpenseForm()
+    expenses = Expense.objects.filter(created__gte=today)
+    if request.method == 'POST':
+        form = ExpenseForm(request.POST)
+        if form.is_valid():
+            expense = form.save()
+            expense.user = request.user
+            expense.save()
+            messages.add_message(request, messages.SUCCESS, 'Expense added!')
+            return redirect('add-expense')
+
+    context = {
+        'recently_add': True,
+        'form': form,
+        'expenses': expenses,
+    }
+    return render(request, 'expenses/add-expense.html', context)
+
+
+def add_category(request):
+    form = CategoryForm()
+    categories = Category.objects.all()
+    context = {
+        'form': form,
+        'categories': categories,
+    }
+    return render(request, 'expenses/add-category.html', context)
 
 
 def dashboard(request):

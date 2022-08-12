@@ -32,7 +32,7 @@
 {% endfor %}
 {% if expenses.has_next %}
 <div class="text-center mt-3" id="load-more">
-    <button class="btn-c" hx-get="{% url 'expenses-date-filter' period 'show' %}?page={{ expenses.next_page_number }}&load-more=True"
+    <button class="btn-c-transparent" hx-get="{% url 'expenses-date-filter' period 'show' %}?page={{ expenses.next_page_number }}&load-more=True"
         hx-target="#load-more" hx-swap="outerHTML">Load More</button>
 </div>
 {% endif %}

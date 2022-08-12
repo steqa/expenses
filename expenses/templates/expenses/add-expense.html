@@ -1,0 +1,66 @@
+{% extends 'expenses/base.html' %}
+{% load widget_tweaks %}
+
+{% block active-add-expense %}nav-link-active-c{% endblock active-add-expense %}
+
+{% block title %}
+Add Expense
+{% endblock title %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row gy-4">
+        <div class="col-12 col-lg-5">
+            <div class="card rounded-4 bg-light-c px-2">
+                <div class="card-body">
+                    <span class="fs-4 fw-semibold">Add Expense</span>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="my-2">
+                            <label class="col-form-label">Name</label>
+                            {% render_field form.name type="text" class="form-control" %}
+                        </div>
+                        <div class="my-2">
+                            <label class="col-form-label">Price</label>
+                            {% render_field form.price type="number" class="form-control" %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="col-form-label">Category</label>
+                            <label class="col-form-label text-second ms-1">Optional</label>
+                            {% render_field form.category class="form-select" %}
+                        </div>
+                        <button type="submit" class="btn-c mb-2">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-7">
+            {% include 'expenses/expenses-card.html' %}
+        </div>
+    </div>
+
+    {% for message in messages %}
+    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+        <div id="liveToast" class="toast align-items-center text-base bg-accent border-0" role="alert"
+            aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    {{ message }}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<script>
+    const toastLiveExample = document.getElementById('liveToast')
+    document.addEventListener('readystatechange', () => {
+        const toast = new bootstrap.Toast(toastLiveExample)
+
+        toast.show()
+    });
+</script>
+{% endblock content %}

@@ -41,6 +41,7 @@ def home(request):
         expenses=Expense.objects.all(), categories=categories)
 
     context = {
+        'form': ExpenseForm(),
         'expenses': expenses,
         'categories': categories,
         'categories_percent': categories_percent,
@@ -179,6 +180,7 @@ def expenses_date_filter(request, period, action):
 
     context = {
         'expenses': page_obj,
+        'expenses_length': len(expenses),
         'period': period,
         'year': year,
         'month': month,
@@ -220,14 +222,46 @@ def add_expense(request):
 
 
 def add_category(request):
+    today = datetime.combine(date.today(), time(0, 0, 0))
     form = CategoryForm()
     categories = Category.objects.all()
+    recently_categories = Category.objects.filter(created__gte=today)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save()
+            category.user = request.user
+            category.save()
+            messages.add_message(request, messages.SUCCESS, 'Category added!')
+            return redirect('add-category')
+        else:
+            print('ERROR')
+    
     context = {
         'form': form,
         'categories': categories,
+        'recently_categories': recently_categories,
     }
     return render(request, 'expenses/add-category.html', context)
 
+
+def update_expense(request, pk):
+    print(request.POST.get('name'))
+    print(request.POST.get('price'))
+    print(request.POST.getlist('category'))
+    expense = Expense.objects.get(pk=pk)
+    print(expense.name)
+    expense.name = request.POST.get('name')
+    print(expense.name)
+    expense.price = request.POST.get('price')
+    expense.category.clear()
+    for pk in request.POST.getlist('category'):
+        expense.category.add(Category.objects.get(pk=pk))
+    expense.save()
+        
+    messages.add_message(request, messages.SUCCESS, 'Expense updated!')
+    return redirect('home')
+    
 
 def dashboard(request):
     if request.method == 'POST':

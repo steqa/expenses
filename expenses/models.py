@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 
 
 class Category(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=150)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    name = models.CharField(max_length=100)
     color = models.CharField(max_length=7, default='#1c8efb')
     created = models.DateTimeField(auto_now_add=True)
 
@@ -17,8 +17,8 @@ class Category(models.Model):
 
 class Expense(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    name = models.CharField(max_length=200)
-    price = models.PositiveIntegerField()
+    name = models.CharField(max_length=100)
+    price = models.FloatField()
     category = models.ManyToManyField(
         Category, related_name='category', blank=True)
     created = models.DateTimeField(auto_now_add=True)

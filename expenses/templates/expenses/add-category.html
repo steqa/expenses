@@ -34,42 +34,20 @@ Add Category
                 <div class="card-body">
                     <span class="fs-4 fw-semibold">Recently Added</span>
                     <div class="row justify-content-between text-second mt-4">
-                        <div class="col-6 col-sm-3 col-md-7">
+                        <div class="col-5">
                             <h6>Name</h6>
                         </div>
-                        <div class="col-6 col-sm-2 col-md-2 text-center">
+                        <div class="col-5 text-center">
                             <h6>Date</h6>
                         </div>
-                        <div class="col-6 col-sm-3 col-md-2 text-center">
-                            <h6>Color</h6>
-                        </div>
-                        <div class="col-6 col-sm-1 col-md-1 text-center">
+                        <div class="col-2 text-center">
                             <h6></h6>
                         </div>
                     </div>
 
                     <div class="py-2">
-                        {% for category in categories %}
-                        <div class="row py-3 align-items-center justify-content-between table-row">
-                            <div class="col-6 col-sm-3 col-md-7">
-
-                            </div>
-                            <div class="col-6 col-sm-3 col-md-2 text-center">
-
-                            </div>
-                            <div class="col-6 col-sm-3 col-md-2 text-center">
-
-                            </div>
-                            <div class="col-6 col-sm-1 col-md-1 text-center">
-                                <a href="" class="text-second-link">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
-                                        class="bi bi-three-dots text-center me-2" viewBox="0 0 16 16">
-                                        <path
-                                            d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
+                        {% for category in recently_categories %}
+                        {% include 'expenses/category-card-row.html' %}
                         {% endfor %}
                     </div>
                 </div>
@@ -81,18 +59,30 @@ Add Category
             <div class="card rounded-4 bg-light-c px-2">
                 <div class="card-body">
                     <span class="fs-4 fw-semibold">All Categories</span>
-                    {% for category in categories %}
-                    <p>
-                        {{ category }}
-                    </p>
-                    {% endfor %}
+                    <div class="row justify-content-between text-second mt-4">
+                        <div class="col-5">
+                            <h6>Name</h6>
+                        </div>
+                        <div class="col-5 text-center">
+                            <h6>Date</h6>
+                        </div>
+                        <div class="col-2 text-center">
+                            <h6></h6>
+                        </div>
+                    </div>
+
+                    <div class="py-2">
+                        {% for category in categories %}
+                        {% include 'expenses/category-card-row.html' %}
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     {% for message in messages %}
-    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="liveToast" class="toast align-items-center text-base bg-accent border-0" role="alert"
             aria-live="assertive" aria-atomic="true">
             <div class="d-flex">

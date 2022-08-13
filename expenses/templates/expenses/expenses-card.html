@@ -20,6 +20,9 @@
                         Added
                         {% endif %}
                     </span>
+                    {% if period %}
+                    <p class="text-second font-monospace mt-1 mb-0">TOTAL: {{ expenses_length }}</p>
+                    {% endif %}
                 </div>
                 {% if period %}
                 <div class="col text-end font-monospace">
@@ -101,8 +104,7 @@
                         {% elif period == 'month' %}
                         <span class="font-monospace text-uppercase">{{ month }} {{ year }}</span>
                         {% elif period == 'week' %}
-                        <span class="font-monospace text-uppercase">{{ week_start|date:"d M Y" }} - {{ week_end|date:"d
-                            M Y"}}</span>
+                        <span class="font-monospace text-uppercase">{{ week_start|date:"d M Y" }} - {{ week_end|date:"d M Y"}}</span>
                         {% endif %}
                         <a class="text-second-link ps-2" href="" hx-get="
                             {% if period == 'year' %}
@@ -127,7 +129,7 @@
                 {% endif %}
             </div>
 
-            <div class="row justify-content-between text-second mt-4">
+            <div class="row justify-content-between text-second mt-3">
                 <div class="col-6 col-sm-3 col-md-4">
                     <h6>Name</h6>
                 </div>

@@ -245,6 +245,12 @@
     transition-duration: 0.05s;
 }
 
+.category-name {
+    text-decoration-line: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 2px;
+}
+
 /* Dropdown */
 .dropdown-menu-dark {
     background-color: var(--bg-light);
@@ -277,6 +283,7 @@
     top: 0;
     left: 0;
     overflow-x: visible;
+    z-index: 10;
     background-color: var(--bg-light);
 }
 

@@ -22,7 +22,7 @@ Add Expense
                         </div>
                         <div class="my-2">
                             <label class="col-form-label">Price</label>
-                            {% render_field form.price type="number" class="form-control" %}
+                            {% render_field form.price type="number" class="form-control" min="0" %}
                         </div>
                         <div class="mb-3">
                             <label class="col-form-label">Category</label>
@@ -41,7 +41,7 @@ Add Expense
     </div>
 
     {% for message in messages %}
-    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div class="toast-container position-fixed bottom-0 end-0-x p-3">
         <div id="liveToast" class="toast align-items-center text-base bg-accent border-0" role="alert"
             aria-live="assertive" aria-atomic="true">
             <div class="d-flex">

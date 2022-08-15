@@ -246,21 +246,28 @@ def add_category(request):
 
 
 def update_expense(request, pk):
-    print(request.POST.get('name'))
-    print(request.POST.get('price'))
-    print(request.POST.getlist('category'))
     expense = Expense.objects.get(pk=pk)
-    print(expense.name)
     expense.name = request.POST.get('name')
-    print(expense.name)
     expense.price = request.POST.get('price')
-    expense.category.clear()
-    for pk in request.POST.getlist('category'):
-        expense.category.add(Category.objects.get(pk=pk))
-    expense.save()
+    
+    if len(expense.name) == 0:
+        messages.add_message(request, messages.ERROR, 'The name must contain at least 1 character!')
+    elif float(expense.price) < 0.01:
+        messages.add_message(request, messages.ERROR, 'The price should be more than $0.01!')
+    else:
+        expense.category.clear()
+        for pk in request.POST.getlist('category'):
+            expense.category.add(Category.objects.get(pk=pk))
+            
+        expense.save()
+        messages.add_message(request, messages.SUCCESS, 'Expense updated!')
         
-    messages.add_message(request, messages.SUCCESS, 'Expense updated!')
-    return redirect('home')
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+def update_category(request, pk):
+    category = Category.objects.get(pk=pk)
+    return redirect(request.META.get('HTTP_REFERER'))
     
 
 def dashboard(request):

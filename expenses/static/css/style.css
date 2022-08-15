@@ -2,6 +2,7 @@
     --accent: rgb(28, 142, 251);
     --second: rgba(189, 190, 194, 1);
     --base: rgba(255, 255, 255, 1);
+    --error: rgb(207, 81, 81);
     --bg-light: rgba(36, 38, 53, 1);
     --bg-second: rgba(31, 34, 46, 1);
     --bg-dark: rgba(26, 29, 38, 1);
@@ -44,6 +45,11 @@
 .bg-accent {
     color: var(--base);
     background-color: var(--accent);
+}
+
+.bg-error {
+    color: var(--base);
+    background-color: var(--error);
 }
 
 .bg-gradient-c {

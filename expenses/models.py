@@ -18,7 +18,7 @@ class Category(models.Model):
 class Expense(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=100)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=12, decimal_places=2)
     category = models.ManyToManyField(
         Category, related_name='category', blank=True)
     created = models.DateTimeField(auto_now_add=True)

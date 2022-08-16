@@ -9,6 +9,8 @@ from .forms import ExpenseForm, CategoryForm
 
 
 def home(request):
+    _MONTHNAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     today = datetime.combine(date.today(), time(0, 0, 0))
     week = timedelta(minutes=60*24*7)
     expenses = Expense.objects.all()[0:5]
@@ -16,19 +18,19 @@ def home(request):
     total_year = sum(i.price for i in Expense.objects.filter(
         created__year=today.year))
     total_month = sum(i.price for i in Expense.objects.filter(
-        created__month=today.month))
+        created__year=today.year, created__month=today.month))
     total_week = sum(i.price for i in Expense.objects.filter(
-        created__gte=today-week))
+        created__gte=today - week, created__lte=today))
     total_day = sum(i.price for i in Expense.objects.filter(
-        created__day=today.day))
+        created__year=today.year, created__month=today.month, created__day=today.day))
     last_year = sum(i.price for i in Expense.objects.filter(
         created__year=today.year - 1))
     last_month = sum(i.price for i in Expense.objects.filter(
-        created__month=today.month - 1))
+        created__year=today.year, created__month=today.month - 1))
     last_week = sum(i.price for i in Expense.objects.filter(
-        Q(created__gte=today - week - week), Q(created__lte=today - week)))
+        created__gte=today - week - week, created__lte=today - week))
     last_day = sum(i.price for i in Expense.objects.filter(
-        created__day=today.day - 1))
+        created__year=today.year, created__month=today.month, created__day=today.day - 1))
     percent_last_year = _get_percent_last(
         now=total_year, last=last_year)
     percent_last_month = _get_percent_last(
@@ -39,7 +41,11 @@ def home(request):
         now=total_day, last=last_day)
     categories_percent = _get_categories_percent(
         expenses=Expense.objects.all(), categories=categories)
-
+    expenses_data = []
+    for m in range(1, 13):
+        expenses_data.append(float(sum(e.price for e in Expense.objects.filter(created__year=2021, created__month=m))))
+        
+    print(expenses_data)
     context = {
         'form': ExpenseForm(),
         'expenses': expenses,
@@ -53,6 +59,8 @@ def home(request):
         'percent_last_month': percent_last_month,
         'percent_last_week': percent_last_week,
         'percent_last_day': percent_last_day,
+        'expenses_data': expenses_data,
+        'months': _MONTHNAMES,
     }
     return render(request, 'expenses/home.html', context)
 
@@ -73,7 +81,7 @@ def expenses_date_filter(request, period, action):
         month = today.month
         year = today.year
         expenses = Expense.objects.filter(
-            Q(created__month=month), Q(created__year=year))
+            created__month=month, created__year=year)
         month = _MONTHNAMES[month - 1]
     elif period == 'week':
         week_start = today - week
@@ -83,8 +91,8 @@ def expenses_date_filter(request, period, action):
         day = today.day
         month = today.month
         year = today.year
-        expenses = Expense.objects.filter(Q(created__day=day), Q(
-            created__month=month), Q(created__year=year))
+        expenses = Expense.objects.filter(created__day=day,
+            created__month=month, created__year=year)
         day = f'0{day}' if len(str(day)) == 1 else day
         month = _MONTHNAMES[month - 1]
 
@@ -122,7 +130,7 @@ def expenses_date_filter(request, period, action):
                         month += 1
 
             expenses = Expense.objects.filter(
-                Q(created__month=month), Q(created__year=year))
+                created__month=month, created__year=year)
             month = _MONTHNAMES[month - 1]
             year = year
         elif period == 'week':
@@ -152,7 +160,7 @@ def expenses_date_filter(request, period, action):
                     week_end = week_end + week
 
             expenses = Expense.objects.filter(
-                Q(created__gte=week_start), Q(created__lte=week_end))
+                created__gte=week_start, created__lte=week_end)
         elif period == 'day':
             day = int(request.GET.get('day'))
             month = int(_MONTHNAMES.index(request.GET.get('month'))) + 1
@@ -167,8 +175,8 @@ def expenses_date_filter(request, period, action):
                 except:
                     day = day
 
-            expenses = Expense.objects.filter(Q(created__day=day), Q(
-                created__month=month), Q(created__year=year))
+            expenses = Expense.objects.filter(created__day=day,
+                created__month=month, created__year=year)
             day = f'0{day}' if len(str(day)) == 1 else day
             month = _MONTHNAMES[month - 1]
     else:
@@ -203,7 +211,10 @@ def expenses_date_filter(request, period, action):
 def add_expense(request):
     today = datetime.combine(date.today(), time(0, 0, 0))
     form = ExpenseForm()
-    expenses = Expense.objects.filter(created__gte=today)
+    expenses = Expense.objects.filter(
+        Q(created__year=today.year, created__month=today.month, created__day=today.day - 1) |
+        Q(created__year=today.year, created__month=today.month, created__day=today.day)
+    )
     if request.method == 'POST':
         form = ExpenseForm(request.POST)
         if form.is_valid():
@@ -225,7 +236,10 @@ def add_category(request):
     today = datetime.combine(date.today(), time(0, 0, 0))
     form = CategoryForm()
     categories = Category.objects.all()
-    recently_categories = Category.objects.filter(created__gte=today)
+    recently_categories = Category.objects.filter(
+        Q(created__year=today.year, created__month=today.month, created__day=today.day - 1) |
+        Q(created__year=today.year, created__month=today.month, created__day=today.day)
+    )
     if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
@@ -247,14 +261,16 @@ def add_category(request):
 
 def update_expense(request, pk):
     expense = Expense.objects.get(pk=pk)
-    expense.name = request.POST.get('name')
-    expense.price = request.POST.get('price')
+    name = request.POST.get('name')
+    price = request.POST.get('price')
     
-    if len(expense.name) == 0:
+    if len(name) == 0:
         messages.add_message(request, messages.ERROR, 'The name must contain at least 1 character!')
-    elif float(expense.price) < 0.01:
+    elif float(price) < 0.01:
         messages.add_message(request, messages.ERROR, 'The price should be more than $0.01!')
     else:
+        expense.name = name
+        expense.price = price
         expense.category.clear()
         for pk in request.POST.getlist('category'):
             expense.category.add(Category.objects.get(pk=pk))
@@ -267,6 +283,16 @@ def update_expense(request, pk):
 
 def update_category(request, pk):
     category = Category.objects.get(pk=pk)
+    name = request.POST.get('name')
+    color = request.POST.get('color')
+    if len(name) == 0:
+        messages.add_message(request, messages.ERROR, 'The name must contain at least 1 character!')
+    else:
+        category.name = name
+        category.color = color
+        category.save()
+        messages.add_message(request, messages.SUCCESS, 'Category updated!')
+    
     return redirect(request.META.get('HTTP_REFERER'))
     
 

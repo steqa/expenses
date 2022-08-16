@@ -1,13 +1,14 @@
+{% load humanize %}
 {% for expense in expenses %}
 <div class="row py-3 align-items-center justify-content-between table-row">
     <div class="col-6 col-sm-3 col-md-4">
         <p class="my-0">{{ expense.name }}</p>
     </div>
     <div class="col-6 col-sm-3 col-md-2 text-center">
-        <p class="my-0 fw-semibold">${{ expense.price }}</p>
+        <p class="my-0 fw-semibold">${{ expense.price|intcomma }}</p>
     </div>
     <div class="col-6 col-sm-2 col-md-2 text-center">
-        <p class="my-0 text-second">{{ expense.created|date:"d.m.y" }}</p>
+        <p class="my-0 text-second">{{ expense.created|naturalday:"M. d, Y" }}</p>
     </div>
     <div class="col-6 col-sm-3 col-md-3 text-center">
         {% for category in expense.category.all %}
@@ -19,11 +20,11 @@
             onclick="categoryShow({{ category.pk }}, {{ expense.pk }})"> {{ category.name }} </a>
         {% endfor %}
     </div>
-    <div class="col-6 col-sm-1 col-md-1 text-center">
+    <div class="col-6 col-sm-1 col-md-1 text-end">
         <div class="dropdown">
             <a href="#" class="text-second-link" data-bs-toggle="dropdown">
                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor"
-                    class="bi bi-three-dots text-center me-2" viewBox="0 0 16 16">
+                    class="bi bi-three-dots" viewBox="0 0 16 16">
                     <path
                         d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" />
                 </svg>
@@ -81,7 +82,7 @@
                             <option value="{{ category.pk }}">{{ category }}</option>
                             {% endif %}
                             {% endfor %}
-                          </select>
+                        </select>
                     </div>
                     <button type="submit" class="btn-c mb-2">Submit</button>
                 </form>

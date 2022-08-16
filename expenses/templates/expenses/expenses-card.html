@@ -45,7 +45,7 @@
                                 {% endfor %}
                             </ul>
                         </div>
-                        <div class="dropdown text-uppercase me-4">
+                        <div class="dropdown me-4">
                             <a href="#" class="text-second-link dropdown-toggle" data-bs-toggle="dropdown">
                                 {{ month }}
                             </a>
@@ -100,11 +100,11 @@
                             </svg>
                         </a>
                         {% if period == 'year' %}
-                        <span class="font-monospace text-uppercase">{{ year }}</span>
+                        <span class="font-monospace">{{ year }}</span>
                         {% elif period == 'month' %}
-                        <span class="font-monospace text-uppercase">{{ month }} {{ year }}</span>
+                        <span class="font-monospace">{{ month }} {{ year }}</span>
                         {% elif period == 'week' %}
-                        <span class="font-monospace text-uppercase">{{ week_start|date:"d M Y" }} - {{ week_end|date:"d M Y"}}</span>
+                        <span class="font-monospace">{{ week_start|date:"d M Y" }} - {{ week_end|date:"d M Y"}}</span>
                         {% endif %}
                         <a class="text-second-link ps-2" href="" hx-get="
                             {% if period == 'year' %}
@@ -142,7 +142,7 @@
                 <div class="col-6 col-sm-3 col-md-3 text-center">
                     <h6>Category</h6>
                 </div>
-                <div class="col-6 col-sm-1 col-md-1 text-center">
+                <div class="col-6 col-sm-1 col-md-1 text-end">
                     <h6></h6>
                 </div>
             </div>

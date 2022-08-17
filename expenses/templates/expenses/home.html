@@ -8,7 +8,7 @@ Home
 {% endblock title %}
 
 {% block content %}
-<div class="container-fluid mt-5">
+<div class="container-fluid">
     <div class="row gy-4">
         <!-- Left block -->
         <div class="col-12 col-lg-8">
@@ -135,26 +135,32 @@ Home
                 </div>
             </div>
 
-            <div class="card rounded-4 bg-light-c px-2 mb-4">
-                <div class="card-body">
-                    <div class="mb-1">
-                        <span class="fs-4 fw-semibold">
-                            Expenses
-                        </span>
+            <div class="card border-light-c rounded-4 bg-light-c px-2 mb-4">
+                <div class="card-body p-3">
+                    <div class="row align-items-center justify-content-between">
+                        <div class="col mb-1">
+                            <h4 class="fw-semibold mb-4 mt-2">
+                                Expenses
+                            </h4>
+                        </div>
+                        <div class="col text-end font-monospace mb-4 mt-2">
+                            <div id="expenseChartCont">
+                                {% include 'expenses/expense-chart.html' %}
+                            </div>
+                        </div>
                     </div>
-                    <div class="my-3">
-                        <canvas id="myChart"></canvas>
+                    <div class="mb-2">
+                        <canvas id="expenseChart"></canvas>
                     </div>
-
                     <script>
                         const data = {
-                            labels: {{ months|safe }},
-                             datasets: [{
-                                 data: {{ expenses_data| safe }},
-                                 backgroundColor: 'rgba(28, 142, 251, 0.5)',
-                                 hoverBackgroundColor: 'rgba(28, 142, 251, 1)',
-                                 borderRadius: 15,
-                                 }],
+                            labels: {{ months| safe }},
+                        datasets: [{
+                            data: {{ expenses_data| safe }},
+                            backgroundColor: 'rgba(28, 142, 251, 0.5)',
+                            hoverBackgroundColor: 'rgba(28, 142, 251, 1)',
+                            borderRadius: 15,
+                            }],
                         };
 
                         const config = {
@@ -213,10 +219,9 @@ Home
                             },
                         };
                     </script>
-
                     <script>
-                        const myChart = new Chart(
-                            document.getElementById('myChart'),
+                        const expenseChart = new Chart(
+                            document.getElementById('expenseChart'),
                             config
                         );
                     </script>
@@ -224,18 +229,18 @@ Home
             </div>
 
             {% include 'expenses/expenses-card.html' %}
-
         </div>
+
         <!-- Right block -->
         <div class="col-12 col-lg-4">
-            <div class="card rounded-4 bg-light-c px-2">
+            <div class="card border-light-c rounded-4 bg-light-c px-2">
                 <h5 class="text-light">
                 </h5>
-                <div class="card-body">
+                <div class="card-body p-3">
                     {% for category in categories %}
                     {% if category.category.all %}
-                    <div class="card bg-light-c my-3">
-                        <div class="card-body rounded-4 bg-dark-c">
+                    <div class="card border-dark-c rounded-4 bg-second-c my-3">
+                        <div class="card-body">
                             {% for key, value in categories_percent.items %}
                             {% if key == category.name %}
                             <div class="row">

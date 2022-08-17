@@ -43,9 +43,8 @@ def home(request):
         expenses=Expense.objects.all(), categories=categories)
     expenses_data = []
     for m in range(1, 13):
-        expenses_data.append(float(sum(e.price for e in Expense.objects.filter(created__year=2021, created__month=m))))
+        expenses_data.append(float(sum(e.price for e in Expense.objects.filter(created__year=today.year, created__month=m))))
         
-    print(expenses_data)
     context = {
         'form': ExpenseForm(),
         'expenses': expenses,
@@ -61,8 +60,36 @@ def home(request):
         'percent_last_day': percent_last_day,
         'expenses_data': expenses_data,
         'months': _MONTHNAMES,
+        'chart_year': today.year,
     }
     return render(request, 'expenses/home.html', context)
+
+
+def chart_year_change(request, action):
+    _MONTHNAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    chart_year = int(request.GET.get('chart_year'))
+    if action == 'previous':
+        chart_year -= 1
+    elif action == 'next':
+        chart_year += 1
+        
+    e = []
+    for m in range(1, 13):
+        e.append(float(sum(e.price for e in Expense.objects.filter(created__year=chart_year, created__month=m))))
+        
+    if e != [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]:
+        expenses_data = e
+    else:
+        chart_year = request.GET.get('chart_year')
+        
+    print(expenses_data)
+    context = {
+        'expenses_data': expenses_data,
+        'months': _MONTHNAMES,
+        'chart_year': chart_year,
+    }
+    return render(request, 'expenses/expense-chart.html', context)
 
 
 def expenses_date_filter(request, period, action):
@@ -73,6 +100,7 @@ def expenses_date_filter(request, period, action):
                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     today = datetime.combine(date.today(), time(0, 0, 0))
     week = timedelta(minutes=60*24*7)
+    categories = Category.objects.all()
 
     if period == 'year':
         year = today.year
@@ -188,6 +216,7 @@ def expenses_date_filter(request, period, action):
 
     context = {
         'expenses': page_obj,
+        'categories': categories,
         'expenses_length': len(expenses),
         'period': period,
         'year': year,
@@ -211,6 +240,7 @@ def expenses_date_filter(request, period, action):
 def add_expense(request):
     today = datetime.combine(date.today(), time(0, 0, 0))
     form = ExpenseForm()
+    categories = Category.objects.all()
     expenses = Expense.objects.filter(
         Q(created__year=today.year, created__month=today.month, created__day=today.day - 1) |
         Q(created__year=today.year, created__month=today.month, created__day=today.day)
@@ -228,6 +258,7 @@ def add_expense(request):
         'recently_add': True,
         'form': form,
         'expenses': expenses,
+        'categories': categories,
     }
     return render(request, 'expenses/add-expense.html', context)
 
@@ -293,6 +324,20 @@ def update_category(request, pk):
         category.save()
         messages.add_message(request, messages.SUCCESS, 'Category updated!')
     
+    return redirect(request.META.get('HTTP_REFERER'))
+    
+
+def delete_expense(request, pk):
+    expense = Expense.objects.get(pk=pk)
+    expense.delete()
+    messages.add_message(request, messages.SUCCESS, 'Expense deleted!')
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+def delete_category(request, pk):
+    category = Category.objects.get(pk=pk)
+    category.delete()
+    messages.add_message(request, messages.SUCCESS, 'Category deleted!')
     return redirect(request.META.get('HTTP_REFERER'))
     
 

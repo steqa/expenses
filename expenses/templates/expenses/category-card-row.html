@@ -28,7 +28,8 @@
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item d-flex align-items-center justify-content-between" href="">
+                    <a class="dropdown-item d-flex align-items-center justify-content-between" href=""
+                        data-bs-toggle="modal" data-bs-target="#category-delete-{{ category.pk }}">
                         Delete
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-trash3" viewBox="0 0 16 16">
@@ -41,23 +42,52 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="category-edit-{{ category.pk }}" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body">
-                <span class="fs-4 fw-semibold">Edit Expense</span>
+        <div class="modal-content border-light-c">
+            <div class="modal-body p-4 text-center">
                 <form action="{% url 'update-category' category.pk %}" method="post">
                     {% csrf_token %}
-                    <div class="my-2">
+                    <div class="mx-3 mb-3 mt-2">
                         <label class="col-form-label">Name</label>
                         <input name="name" type="text" class="form-control" value="{{ category.name }}">
                     </div>
-                    <div class="mb-3">
+                    <div class="mx-3 mb-3">
                         <label class="col-form-label">Color</label>
-                        <input name="color" type="color" class="form-control form-control-color" value="{{ category.color }}">
+                        <input name="color" type="color" class="form-control form-control-color"
+                            value="{{ category.color }}">
                     </div>
-                    <button type="submit" class="btn-c mb-2">Submit</button>
+                    <div class="mb-3 pt-3">
+                        <button type="button" class="btn-c btn-second-c col-4 me-2"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn-c btn-c col-4">Submit</button>
+                    </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="category-delete-{{ category.pk }}" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-light-c">
+            <div class="modal-body p-4 text-center">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" fill="currentColor"
+                        class="bi bi-x-circle-fill modal-delete-icon my-4" viewBox="0 0 16 16">
+                        <path
+                            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+                    </svg>
+                </div>
+                <span class="fs-2 fw-semibold">Are you sure?</span>
+                <p class="text-second py-3">Do you really want to remove this category? This process cannot be undone.
+                </p>
+                <div class="mb-3">
+                    <button type="button" class="btn-c btn-second-c col-4 me-2" data-bs-dismiss="modal">Cancel</button>
+                    <a href="{% url 'delete-category' category.pk %}" type="submit"
+                        class="btn-c btn-error-c col-4">Delete</a>
+                </div>
             </div>
         </div>
     </div>

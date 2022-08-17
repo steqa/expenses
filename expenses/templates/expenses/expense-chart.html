@@ -1,0 +1,26 @@
+<span class="text-second d-flex justify-content-end">
+    <a class="text-second-link pe-2" href=""
+        hx-get="{% url 'chart-year-change' 'previous' %}?chart_year={{ chart_year }}"
+        hx-trigger="click" hx-target="#expenseChartCont">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+            fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 1.5 16 16">
+            <path
+                d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+        </svg>
+    </a>
+    <span class="font-monospace">{{ chart_year }}</span>
+    <a class="text-second-link ps-2" href=""
+        hx-get="{% url 'chart-year-change' 'next' %}?chart_year={{ chart_year }}"
+        hx-trigger="click" hx-target="#expenseChartCont">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+            fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 1.5 16 16">
+            <path
+                d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+        </svg>
+    </a>
+</span>
+<script>
+    expenseChart.data.labels = {{ months | safe }};
+    expenseChart.data.datasets[0].data = {{ expenses_data | safe }};
+    expenseChart.update()
+</script>

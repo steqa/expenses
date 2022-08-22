@@ -244,8 +244,8 @@ Home
                             {% for key, value in categories_percent.items %}
                             {% if key == category.name %}
                             <div class="row">
-                                <a href="" class="col text-base-link">
-                                    {{ category.name }}</a>
+                                <p class="col m-0">
+                                    {{ category.name }}</p>
                                 <span class="col text-end" style="color: {{ category.color }};">
                                     {{ value|floatformat:0 }}%
                                 </span>

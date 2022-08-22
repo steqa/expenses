@@ -1,4 +1,16 @@
 {% load humanize %}
+<div class="row justify-content-between text-second mt-4 mb-1">
+    <div class="col-5">
+        <h6>Name</h6>
+    </div>
+    <div class="col-5 text-center">
+        <h6>Date</h6>
+    </div>
+    <div class="col-2 text-center">
+        <h6></h6>
+    </div>
+</div>
+{% for category in categories %}
 <div class="row py-3 align-items-center justify-content-between table-row">
     <div class="col-5">
         <p class="my-0 category-name" style="text-decoration-color: {{ category.color }};">{{ category.name }}</p>
@@ -92,3 +104,4 @@
         </div>
     </div>
 </div>
+{% endfor %}

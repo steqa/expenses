@@ -1,5 +1,6 @@
 import random
 from datetime import datetime, timedelta, date, time
+from re import T
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -102,6 +103,9 @@ def expenses_date_filter(request, period, action):
     week = timedelta(minutes=60*24*7)
     categories = Category.objects.all()
 
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
+    search = False
+
     if period == 'year':
         year = today.year
         expenses = Expense.objects.filter(created__year=year)
@@ -135,7 +139,7 @@ def expenses_date_filter(request, period, action):
                 if year < _YEARS[-1]:
                     year += 1
 
-            expenses = Expense.objects.filter(created__year=year)
+            expenses = Expense.objects.filter(created__year=year, name__iregex=q)
             year = year
         elif period == 'month':
             month = int(_MONTHNAMES.index(request.GET.get('month'))) + 1
@@ -158,7 +162,7 @@ def expenses_date_filter(request, period, action):
                         month += 1
 
             expenses = Expense.objects.filter(
-                created__month=month, created__year=year)
+                created__month=month, created__year=year, name__iregex=q)
             month = _MONTHNAMES[month - 1]
             year = year
         elif period == 'week':
@@ -188,7 +192,7 @@ def expenses_date_filter(request, period, action):
                     week_end = week_end + week
 
             expenses = Expense.objects.filter(
-                created__gte=week_start, created__lte=week_end)
+                created__gte=week_start, created__lte=week_end, name__iregex=q)
         elif period == 'day':
             day = int(request.GET.get('day'))
             month = int(_MONTHNAMES.index(request.GET.get('month'))) + 1
@@ -204,7 +208,7 @@ def expenses_date_filter(request, period, action):
                     day = day
 
             expenses = Expense.objects.filter(created__day=day,
-                created__month=month, created__year=year)
+                created__month=month, created__year=year, name__iregex=q)
             day = f'0{day}' if len(str(day)) == 1 else day
             month = _MONTHNAMES[month - 1]
     else:
@@ -228,7 +232,7 @@ def expenses_date_filter(request, period, action):
         'months': _MONTHNAMES,
     }
 
-    if request.GET.get('load-more') == 'True':
+    if request.GET.get('load-more') == 'True' or action == 'search':
         return render(request, 'expenses/expenses-card-rows.html', context)
 
     if htmx == True:

@@ -1,4 +1,26 @@
 {% load humanize %}
+{% if period %}
+<div class="align-items-end mt-2">
+    <p class="text-second font-monospace m-0">TOTAL: {{ expenses_length }}</p>
+</div>
+{% endif %}
+<div class="row justify-content-between text-second mt-4 mb-1">
+    <div class="col-6 col-sm-3 col-md-3">
+        <h6>Name</h6>
+    </div>
+    <div class="col-6 col-sm-3 col-md-3 text-center">
+        <h6>Price</h6>
+    </div>
+    <div class="col-6 col-sm-2 col-md-2 text-center">
+        <h6>Date</h6>
+    </div>
+    <div class="col-6 col-sm-3 col-md-3 text-center">
+        <h6>Category</h6>
+    </div>
+    <div class="col-6 col-sm-1 col-md-1 text-end">
+        <h6></h6>
+    </div>
+</div>
 {% for expense in expenses %}
 <div class="row py-3 align-items-center justify-content-between table-row">
     <div class="col-6 col-sm-3 col-md-3">

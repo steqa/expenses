@@ -1,11 +1,10 @@
 import random
 from datetime import datetime, timedelta, date, time
-from re import T
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q
-from .models import Expense, Category
+from .models import Expense, Category, Limit
 from .forms import ExpenseForm, CategoryForm
 
 
@@ -45,7 +44,25 @@ def home(request):
     expenses_data = []
     for m in range(1, 13):
         expenses_data.append(float(sum(e.price for e in Expense.objects.filter(created__year=today.year, created__month=m))))
-        
+    
+    try:
+        limit = Limit.objects.get(user=request.user)
+        limit_percent = (total_month * 100) / limit.number
+        limit_progress = limit.number - total_month
+        if limit_progress >= 0:
+            before_limit = True
+        else:
+            limit_progress = limit_progress * -1
+            before_limit = False
+
+    except:
+        limit = False
+        limit_percent = False
+        limit_progress = False
+        before_limit = False
+    
+    
+    
     context = {
         'form': ExpenseForm(),
         'expenses': expenses,
@@ -62,6 +79,10 @@ def home(request):
         'expenses_data': expenses_data,
         'months': _MONTHNAMES,
         'chart_year': today.year,
+        'limit': limit,
+        'limit_percent': limit_percent,
+        'limit_progress': limit_progress,
+        'before_limit': before_limit,
     }
     return render(request, 'expenses/home.html', context)
 
@@ -344,6 +365,18 @@ def delete_category(request, pk):
     messages.add_message(request, messages.SUCCESS, 'Category deleted!')
     return redirect(request.META.get('HTTP_REFERER'))
     
+
+def set_limit(request):
+    number = request.POST.get('number')
+    try:
+        limit = Limit.objects.get(user=request.user)
+        limit.number = number
+        limit.save()
+    except:
+        Limit.objects.create(user=request.user, number=number)
+        
+    return redirect('home')    
+
 
 def dashboard(request):
     if request.method == 'POST':

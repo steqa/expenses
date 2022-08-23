@@ -28,3 +28,14 @@ class Expense(models.Model):
 
     class Meta:
         ordering = ['user', '-created']
+
+
+class Limit(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    number = models.DecimalField(max_digits=12, decimal_places=2)
+    
+    def __str__(self):
+        return str(self.number)
+    
+    class Meta:
+        ordering = ['user']

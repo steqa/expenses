@@ -125,7 +125,6 @@ def expenses_date_filter(request, period, action):
     categories = Category.objects.all()
 
     q = request.GET.get('q') if request.GET.get('q') is not None else ''
-    search = False
 
     if period == 'year':
         year = today.year
@@ -320,11 +319,7 @@ def update_expense(request, pk):
     name = request.POST.get('name')
     price = request.POST.get('price')
     
-    if len(name) == 0:
-        messages.add_message(request, messages.ERROR, 'The name must contain at least 1 character!')
-    elif float(price) < 0.01:
-        messages.add_message(request, messages.ERROR, 'The price should be more than $0.01!')
-    else:
+    if _expense_validator(request, name=name, price=price):
         expense.name = name
         expense.price = price
         expense.category.clear()
@@ -341,9 +336,7 @@ def update_category(request, pk):
     category = Category.objects.get(pk=pk)
     name = request.POST.get('name')
     color = request.POST.get('color')
-    if len(name) == 0:
-        messages.add_message(request, messages.ERROR, 'The name must contain at least 1 character!')
-    else:
+    if _category_validator(request, name=name):
         category.name = name
         category.color = color
         category.save()
@@ -419,12 +412,43 @@ def _get_categories_percent(expenses, categories):
     all_sum = 0
     for e in expenses:
         all_sum += e.price
-
+        
     for category in categories:
         sum = 0
         for i in category.category.all():
+            print(i)
             sum += i.price
         if sum > 0:
             categories_percent[category.name] = sum / all_sum * 100
+        else:
+            categories_percent[category.name] = 0
 
     return categories_percent
+
+
+def _expense_validator(request, name, price):
+    valid = False
+    if len(name) == 0:
+        messages.add_message(request, messages.ERROR, 'The name must contain at least 1 character!')
+    elif len(name) > 100:
+        messages.add_message(request, messages.ERROR, 'The name must be less than 100 characters!')
+    elif float(price) < 0.01:
+        messages.add_message(request, messages.ERROR, 'The price should be more than $0.01!')
+    elif float(price) > 9999999999.99:
+        messages.add_message(request, messages.ERROR, 'The price should be less than $9999999999.99!')
+    else:
+        valid = True
+        
+    return valid
+
+
+def _category_validator(request, name):
+    valid = False
+    if len(name) == 0:
+        messages.add_message(request, messages.ERROR, 'The name must contain at least 1 character!')
+    elif len(name) > 100:
+        messages.add_message(request, messages.ERROR, 'The name must be less than 100 characters!')
+    else:
+        valid = True
+        
+    return valid

@@ -14,18 +14,18 @@ Add Category
         <div class="col-12 col-lg-5">
             <div class="card border-light-c rounded-4 bg-light-c px-2">
                 <div class="card-body p-3">
-                    <h4 class="fw-semibold mb-4 mt-2">Add Category</h4>
-                    <form method="post">
+                    <h4 class="fw-semibold mt-2">Add Category</h4>
+                    <form method="post" class="mb-2 mt-3">
                         {% csrf_token %}
-                        <div class="mb-3">
+                        <div>
                             <label class="col-form-label">Name</label>
                             {% render_field form.name type="text" class="form-control" %}
                         </div>
-                        <div class="mb-3">
+                        <div class="mt-2">
                             <label class="col-form-label">Color</label>
                             {% render_field form.color type="color" class="form-control form-control-color" %}
                         </div>
-                        <button type="submit" class="btn-c mb-2 mt-3 col-12">Add</button>
+                        <button type="submit" class="btn-c mt-4 col-12">Add</button>
                     </form>
                 </div>
             </div>
@@ -34,16 +34,17 @@ Add Category
                 <div class="card-body p-3">
                     <h4 class="fw-semibold mt-2">Recently Added</h4>
 
-                    <div>
+                    <div class="mb-2 mt-3">
+                        {% if recently_categories %}
                         {% load humanize %}
-                        <div class="row justify-content-between text-second mt-4 mb-1">
+                        <div class="row justify-content-between text-second mt-4">
                             <div class="col-5">
                                 <h6>Name</h6>
                             </div>
                             <div class="col-5 text-center">
                                 <h6>Date</h6>
                             </div>
-                            <div class="col-2 text-center">
+                            <div class="col-2 text-end">
                                 <h6></h6>
                             </div>
                         </div>
@@ -55,7 +56,7 @@ Add Category
                             <div class="col-5 text-center">
                                 <p class="my-0 text-second">{{ category.created|naturalday:"M. d, Y" }}</a>
                             </div>
-                            <div class="col-2 text-center">
+                            <div class="col-2 text-end">
                                 <div class="dropdown">
                                     <a href="#" class="text-second-link" data-bs-toggle="dropdown">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"
@@ -101,17 +102,17 @@ Add Category
                                     <div class="modal-body p-4 text-center">
                                         <form action="{% url 'update-category' category.pk %}" method="post">
                                             {% csrf_token %}
-                                            <div class="mx-3 mb-3 mt-2">
+                                            <div class="mx-3 mt-2">
                                                 <label class="col-form-label">Name</label>
                                                 <input name="name" type="text" class="form-control"
-                                                    value="{{ category.name }}">
+                                                    value="{{ category.name }}" maxlength="100" required>
                                             </div>
-                                            <div class="mx-3 mb-3">
+                                            <div class="mx-3 mt-3">
                                                 <label class="col-form-label">Color</label>
                                                 <input name="color" type="color" class="form-control form-control-color"
-                                                    value="{{ category.color }}">
+                                                    value="{{ category.color }}" required>
                                             </div>
-                                            <div class="mb-3 pt-3">
+                                            <div class="mb-3 mt-4 pt-1">
                                                 <button type="button" class="btn-c btn-second-c col-4 me-2"
                                                     data-bs-dismiss="modal">Cancel</button>
                                                 <button type="submit" class="btn-c btn-c col-4">Submit</button>
@@ -149,6 +150,9 @@ Add Category
                             </div>
                         </div>
                         {% endfor %}
+                        {% else %}
+                        <p class="text-second m-0">Not found.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -158,10 +162,14 @@ Add Category
         <div class="col-12 col-lg-7">
             <div class="card border-light-c rounded-4 bg-light-c px-2">
                 <div class="card-body p-3">
-                    <h4 class="fw-semibold mt-2">All Categories</h4>
+                    <h4 class="fw-semibold m-0 mt-2">All Categories</h4>
 
-                    <div>
+                    <div class="mb-2 mt-3">
+                        {% if categories %}
                         {% include 'expenses/category-card-row.html' %}
+                        {% else %}
+                        <p class="text-second m-0">Not found.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>

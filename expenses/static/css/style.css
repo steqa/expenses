@@ -12,7 +12,21 @@
     --bg-gradient-purple: linear-gradient(180deg, rgba(241, 42, 227, 1), rgba(191, 51, 234, 1), rgba(150, 54, 243, 1));
     --bg-gradient-green: linear-gradient(180deg, rgba(68, 216, 154, 1), rgba(31, 209, 185, 1), rgba(52, 205, 224, 1));
     --navbar-width: 220px;
-    --navbar-width-sm: 4.5rem;
+    --navbar-width-sm: 80px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: var(--bg-light);
+}
+
+::-webkit-inner-spin-button {
+    display: none;
 }
 
 .hidden {

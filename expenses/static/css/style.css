@@ -41,6 +41,13 @@
     margin-left: var(--navbar-width);
 }
 
+.center-cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
 .container-fluid {
     padding-right: 50px;
     padding-left: 50px;

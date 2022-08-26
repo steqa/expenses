@@ -1,0 +1,22 @@
+{% extends 'authentication/base.html' %}
+
+{% block login-active %}text-accent-link{% endblock %}
+
+{% block title %}
+Login
+{% endblock title %}
+
+{% block content %}
+<form method="post" class="mb-2 mt-2">
+    {% csrf_token %}
+    <div>
+        <label class="col-form-label">Username</label>
+        <input name="username" type="text" class="form-control">
+    </div>
+    <div class="mt-2">
+        <label class="col-form-label">Password</label>
+        <input name="password" type="password" class="form-control">
+    </div>
+    <button type="submit" class="btn-c mt-4 col-12">Sign In</button>
+</form>
+{% endblock content %}

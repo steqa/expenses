@@ -1,50 +1,49 @@
 import random
 from datetime import datetime, timedelta, date, time
 from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from .models import Expense, Category, Limit
 from .forms import ExpenseForm, CategoryForm
 
 
+@login_required(login_url='login-user')
 def home(request):
     _MONTHNAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     today = datetime.combine(date.today(), time(0, 0, 0))
     week = timedelta(minutes=60*24*7)
-    expenses = Expense.objects.all()[0:5]
-    categories = Category.objects.all()
+    expenses = Expense.objects.filter(user=request.user)[0:5]
+    categories = Category.objects.filter(user=request.user)
     total_year = sum(i.price for i in Expense.objects.filter(
-        created__year=today.year))
+        user=request.user, created__year=today.year))
     total_month = sum(i.price for i in Expense.objects.filter(
-        created__year=today.year, created__month=today.month))
+        user=request.user, created__year=today.year, created__month=today.month))
     total_week = sum(i.price for i in Expense.objects.filter(
-        created__gte=today - week, created__lte=today))
+        user=request.user, created__gte=today - week, created__lte=today))
     total_day = sum(i.price for i in Expense.objects.filter(
-        created__year=today.year, created__month=today.month, created__day=today.day))
+        user=request.user, created__year=today.year, created__month=today.month, created__day=today.day))
     last_year = sum(i.price for i in Expense.objects.filter(
-        created__year=today.year - 1))
+        user=request.user, created__year=today.year - 1))
     last_month = sum(i.price for i in Expense.objects.filter(
-        created__year=today.year, created__month=today.month - 1))
+        user=request.user, created__year=today.year, created__month=today.month - 1))
     last_week = sum(i.price for i in Expense.objects.filter(
-        created__gte=today - week - week, created__lte=today - week))
+        user=request.user, created__gte=today - week - week, created__lte=today - week))
     last_day = sum(i.price for i in Expense.objects.filter(
-        created__year=today.year, created__month=today.month, created__day=today.day - 1))
-    percent_last_year = _get_percent_last(
-        now=total_year, last=last_year)
-    percent_last_month = _get_percent_last(
-        now=total_month, last=last_month)
-    percent_last_week = _get_percent_last(
-        now=total_week, last=last_week)
-    percent_last_day = _get_percent_last(
-        now=total_day, last=last_day)
+        user=request.user, created__year=today.year, created__month=today.month, created__day=today.day - 1))
+    percent_last_year = _get_percent_last(now=total_year, last=last_year)
+    percent_last_month = _get_percent_last(now=total_month, last=last_month)
+    percent_last_week = _get_percent_last(now=total_week, last=last_week)
+    percent_last_day = _get_percent_last(now=total_day, last=last_day)
     categories_percent = _get_categories_percent(
-        expenses=Expense.objects.all(), categories=categories)
+        expenses=Expense.objects.filter(user=request.user), categories=categories)
     expenses_data = []
     for m in range(1, 13):
-        expenses_data.append(float(sum(e.price for e in Expense.objects.filter(created__year=today.year, created__month=m))))
-    
+        expenses_data.append(float(sum(e.price for e in Expense.objects.filter(
+            user=request.user, created__year=today.year, created__month=m))))
+
     try:
         limit = Limit.objects.get(user=request.user)
         limit_percent = (total_month * 100) / limit.number
@@ -60,9 +59,7 @@ def home(request):
         limit_percent = False
         limit_progress = False
         before_limit = False
-    
-    
-    
+
     context = {
         'form': ExpenseForm(),
         'expenses': expenses,
@@ -87,6 +84,7 @@ def home(request):
     return render(request, 'expenses/home.html', context)
 
 
+@login_required(login_url='login-user')
 def chart_year_change(request, action):
     _MONTHNAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -95,16 +93,17 @@ def chart_year_change(request, action):
         chart_year -= 1
     elif action == 'next':
         chart_year += 1
-        
+
     e = []
     for m in range(1, 13):
-        e.append(float(sum(e.price for e in Expense.objects.filter(created__year=chart_year, created__month=m))))
-        
+        e.append(float(sum(e.price for e in Expense.objects.filter(
+            user=request.user, created__year=chart_year, created__month=m))))
+
     if e != [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]:
         expenses_data = e
     else:
         chart_year = request.GET.get('chart_year')
-        
+
     print(expenses_data)
     context = {
         'expenses_data': expenses_data,
@@ -114,6 +113,7 @@ def chart_year_change(request, action):
     return render(request, 'expenses/expense-chart.html', context)
 
 
+@login_required(login_url='login-user')
 def expenses_date_filter(request, period, action):
     year, month, day, week_start, week_end = '', '', '', '', ''
 
@@ -122,29 +122,31 @@ def expenses_date_filter(request, period, action):
                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     today = datetime.combine(date.today(), time(0, 0, 0))
     week = timedelta(minutes=60*24*7)
-    categories = Category.objects.all()
+    categories = Category.objects.filter(user=request.user)
 
     q = request.GET.get('q') if request.GET.get('q') is not None else ''
 
     if period == 'year':
         year = today.year
-        expenses = Expense.objects.filter(created__year=year)
+        expenses = Expense.objects.filter(
+            user=request.user, created__year=year)
     elif period == 'month':
         month = today.month
         year = today.year
         expenses = Expense.objects.filter(
-            created__month=month, created__year=year)
+            user=request.user, created__month=month, created__year=year)
         month = _MONTHNAMES[month - 1]
     elif period == 'week':
         week_start = today - week
         week_end = today
-        expenses = Expense.objects.filter(created__gte=week_start)
+        expenses = Expense.objects.filter(
+            user=request.user, created__gte=week_start)
     elif period == 'day':
         day = today.day
         month = today.month
         year = today.year
-        expenses = Expense.objects.filter(created__day=day,
-            created__month=month, created__year=year)
+        expenses = Expense.objects.filter(
+            user=request.user, created__day=day, created__month=month, created__year=year)
         day = f'0{day}' if len(str(day)) == 1 else day
         month = _MONTHNAMES[month - 1]
 
@@ -159,7 +161,8 @@ def expenses_date_filter(request, period, action):
                 if year < _YEARS[-1]:
                     year += 1
 
-            expenses = Expense.objects.filter(created__year=year, name__iregex=q)
+            expenses = Expense.objects.filter(
+                user=request.user, created__year=year, name__iregex=q)
             year = year
         elif period == 'month':
             month = int(_MONTHNAMES.index(request.GET.get('month'))) + 1
@@ -182,7 +185,7 @@ def expenses_date_filter(request, period, action):
                         month += 1
 
             expenses = Expense.objects.filter(
-                created__month=month, created__year=year, name__iregex=q)
+                user=request.user, created__month=month, created__year=year, name__iregex=q)
             month = _MONTHNAMES[month - 1]
             year = year
         elif period == 'week':
@@ -212,7 +215,7 @@ def expenses_date_filter(request, period, action):
                     week_end = week_end + week
 
             expenses = Expense.objects.filter(
-                created__gte=week_start, created__lte=week_end, name__iregex=q)
+                user=request.user, created__gte=week_start, created__lte=week_end, name__iregex=q)
         elif period == 'day':
             day = int(request.GET.get('day'))
             month = int(_MONTHNAMES.index(request.GET.get('month'))) + 1
@@ -227,8 +230,8 @@ def expenses_date_filter(request, period, action):
                 except:
                     day = day
 
-            expenses = Expense.objects.filter(created__day=day,
-                created__month=month, created__year=year, name__iregex=q)
+            expenses = Expense.objects.filter(
+                user=request.user, created__day=day, created__month=month, created__year=year, name__iregex=q)
             day = f'0{day}' if len(str(day)) == 1 else day
             month = _MONTHNAMES[month - 1]
     else:
@@ -261,19 +264,22 @@ def expenses_date_filter(request, period, action):
         return render(request, 'expenses/total-period.html', context)
 
 
+@login_required(login_url='login-user')
 def add_expense(request):
     today = datetime.combine(date.today(), time(0, 0, 0))
     form = ExpenseForm()
-    categories = Category.objects.all()
+    categories = Category.objects.filter(user=request.user)
     expenses = Expense.objects.filter(
+        Q(user=request.user),
         Q(created__year=today.year, created__month=today.month, created__day=today.day - 1) |
-        Q(created__year=today.year, created__month=today.month, created__day=today.day)
-    )
+        Q(created__year=today.year, created__month=today.month, created__day=today.day))
     if request.method == 'POST':
         form = ExpenseForm(request.POST)
         if form.is_valid():
             expense = form.save()
             expense.user = request.user
+            for pk in request.POST.getlist('category'):
+                expense.category.add(Category.objects.get(pk=pk))
             expense.save()
             messages.add_message(request, messages.SUCCESS, 'Expense added!')
             return redirect('add-expense')
@@ -287,14 +293,15 @@ def add_expense(request):
     return render(request, 'expenses/add-expense.html', context)
 
 
+@login_required(login_url='login-user')
 def add_category(request):
     today = datetime.combine(date.today(), time(0, 0, 0))
     form = CategoryForm()
-    categories = Category.objects.all()
+    categories = Category.objects.filter(user=request.user)
     recently_categories = Category.objects.filter(
+        Q(user=request.user),
         Q(created__year=today.year, created__month=today.month, created__day=today.day - 1) |
-        Q(created__year=today.year, created__month=today.month, created__day=today.day)
-    )
+        Q(created__year=today.year, created__month=today.month, created__day=today.day))
     if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
@@ -305,7 +312,7 @@ def add_category(request):
             return redirect('add-category')
         else:
             print('ERROR')
-    
+
     context = {
         'form': form,
         'categories': categories,
@@ -314,26 +321,28 @@ def add_category(request):
     return render(request, 'expenses/add-category.html', context)
 
 
+@login_required(login_url='login-user')
 def update_expense(request, pk):
-    expense = Expense.objects.get(pk=pk)
+    expense = get_object_or_404(Expense, pk=pk, user=request.user)
     name = request.POST.get('name')
     price = request.POST.get('price')
-    
+
     if _expense_validator(request, name=name, price=price):
         expense.name = name
         expense.price = price
         expense.category.clear()
         for pk in request.POST.getlist('category'):
             expense.category.add(Category.objects.get(pk=pk))
-            
+
         expense.save()
         messages.add_message(request, messages.SUCCESS, 'Expense updated!')
-        
+
     return redirect(request.META.get('HTTP_REFERER'))
 
 
+@login_required(login_url='login-user')
 def update_category(request, pk):
-    category = Category.objects.get(pk=pk)
+    category = get_object_or_404(Category, pk=pk, user=request.user)
     name = request.POST.get('name')
     color = request.POST.get('color')
     if _category_validator(request, name=name):
@@ -341,24 +350,27 @@ def update_category(request, pk):
         category.color = color
         category.save()
         messages.add_message(request, messages.SUCCESS, 'Category updated!')
-    
-    return redirect(request.META.get('HTTP_REFERER'))
-    
 
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required(login_url='login-user')
 def delete_expense(request, pk):
-    expense = Expense.objects.get(pk=pk)
+    expense = get_object_or_404(Expense, pk=pk, user=request.user)
     expense.delete()
     messages.add_message(request, messages.SUCCESS, 'Expense deleted!')
     return redirect(request.META.get('HTTP_REFERER'))
 
 
+@login_required(login_url='login-user')
 def delete_category(request, pk):
-    category = Category.objects.get(pk=pk)
+    category = get_object_or_404(Category, pk=pk, user=request.user)
     category.delete()
     messages.add_message(request, messages.SUCCESS, 'Category deleted!')
     return redirect(request.META.get('HTTP_REFERER'))
-    
 
+
+@login_required(login_url='login-user')
 def set_limit(request):
     number = request.POST.get('number')
     try:
@@ -367,27 +379,8 @@ def set_limit(request):
         limit.save()
     except:
         Limit.objects.create(user=request.user, number=number)
-        
-    return redirect('home')    
 
-
-def dashboard(request):
-    if request.method == 'POST':
-        quantity = request.POST.get('quantity')
-        categories = Category.objects.all()
-        words = ['phone', 'notebook', 'pen', 'beautiful', 'big', 'small', 'simple', 'mouse', 'keyboard', 'milk', 'chocolate', 'shirt',
-                 'bucket', 'cheese', 'tea', 'coffee', 'car', 'wheel', 'backpack', 'adidas', 'nike', 'off-white', 'supreme', 'cable', 'lamp', 'chair']
-        for q in range(int(quantity)):
-            expense = Expense.objects.create(
-                user=request.user,
-                name=' '.join(random.choice(words)
-                              for i in range(random.randint(1, 7))).capitalize(),
-                price=random.randint(200, 2500),
-            )
-            for i in range(random.randint(1, 4)):
-                expense.category.add(random.choice(categories))
-
-    return render(request, 'expenses/dashboard.html')
+    return redirect('home')
 
 
 def _get_percent_last(now, last):
@@ -412,7 +405,7 @@ def _get_categories_percent(expenses, categories):
     all_sum = 0
     for e in expenses:
         all_sum += e.price
-        
+
     for category in categories:
         sum = 0
         for i in category.category.all():
@@ -429,26 +422,32 @@ def _get_categories_percent(expenses, categories):
 def _expense_validator(request, name, price):
     valid = False
     if len(name) == 0:
-        messages.add_message(request, messages.ERROR, 'The name must contain at least 1 character!')
+        messages.add_message(request, messages.ERROR,
+                             'The name must contain at least 1 character!')
     elif len(name) > 100:
-        messages.add_message(request, messages.ERROR, 'The name must be less than 100 characters!')
+        messages.add_message(request, messages.ERROR,
+                             'The name must be less than 100 characters!')
     elif float(price) < 0.01:
-        messages.add_message(request, messages.ERROR, 'The price should be more than $0.01!')
+        messages.add_message(request, messages.ERROR,
+                             'The price should be more than $0.01!')
     elif float(price) > 9999999999.99:
-        messages.add_message(request, messages.ERROR, 'The price should be less than $9999999999.99!')
+        messages.add_message(request, messages.ERROR,
+                             'The price should be less than $9999999999.99!')
     else:
         valid = True
-        
+
     return valid
 
 
 def _category_validator(request, name):
     valid = False
     if len(name) == 0:
-        messages.add_message(request, messages.ERROR, 'The name must contain at least 1 character!')
+        messages.add_message(request, messages.ERROR,
+                             'The name must contain at least 1 character!')
     elif len(name) > 100:
-        messages.add_message(request, messages.ERROR, 'The name must be less than 100 characters!')
+        messages.add_message(request, messages.ERROR,
+                             'The name must be less than 100 characters!')
     else:
         valid = True
-        
+
     return valid

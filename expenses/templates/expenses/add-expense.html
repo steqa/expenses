@@ -27,7 +27,11 @@ Add Expense
                         <div class="mt-2">
                             <label class="col-form-label">Category</label>
                             <label class="col-form-label text-second ms-1">Optional</label>
-                            {% render_field form.category class="form-select" style="height: calc(100vh - 52vh);" %}
+                            <select name="category" class="form-select" style="height: calc(100vh - 52vh);" multiple>
+                                {% for category in categories %}
+                                <option value="{{ category.pk }}">{{ category }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         <button type="submit" class="btn-c mt-4 col-12">Add</button>
                     </form>

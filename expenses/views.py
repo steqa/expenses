@@ -385,13 +385,14 @@ def set_limit(request):
 
 def _get_percent_last(now, last):
     percent_status = []
+    if now == 0 and last == 0:
+        percent_status.append(0)
+        percent_status.append('Null')
+        return percent_status
+    
     if last == 0:
         percent_status.append(0)
         percent_status.append('Up')
-        return percent_status
-    elif now == 0:
-        percent_status.append(0)
-        percent_status.append('Null')
         return percent_status
     else:
         if now >= last:

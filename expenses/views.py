@@ -1,4 +1,3 @@
-import random
 from datetime import datetime, timedelta, date, time
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect, get_object_or_404
@@ -14,6 +13,7 @@ def home(request):
     _MONTHNAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     today = datetime.combine(date.today(), time(0, 0, 0))
+    today_end = datetime.combine(date.today(), time(23, 59, 59))
     week = timedelta(minutes=60*24*7)
     expenses = Expense.objects.filter(user=request.user)[0:5]
     categories = Category.objects.filter(user=request.user)
@@ -22,7 +22,7 @@ def home(request):
     total_month = sum(i.price for i in Expense.objects.filter(
         user=request.user, created__year=today.year, created__month=today.month))
     total_week = sum(i.price for i in Expense.objects.filter(
-        user=request.user, created__gte=today - week, created__lte=today))
+        user=request.user, created__gte=today - week, created__lte=today_end))
     total_day = sum(i.price for i in Expense.objects.filter(
         user=request.user, created__year=today.year, created__month=today.month, created__day=today.day))
     last_year = sum(i.price for i in Expense.objects.filter(
@@ -387,7 +387,7 @@ def _get_percent_last(now, last):
     percent_status = []
     if last == 0:
         percent_status.append(0)
-        percent_status.append('Null')
+        percent_status.append('Up')
         return percent_status
     else:
         if now >= last:

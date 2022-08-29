@@ -1,0 +1,1 @@
+web: gunicorn steqa_expenses.wsgi --log-file -

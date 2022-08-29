@@ -389,6 +389,10 @@ def _get_percent_last(now, last):
         percent_status.append(0)
         percent_status.append('Up')
         return percent_status
+    elif now == 0:
+        percent_status.append(0)
+        percent_status.append('Null')
+        return percent_status
     else:
         if now >= last:
             percent_status.append((now - last) / last * 100)
